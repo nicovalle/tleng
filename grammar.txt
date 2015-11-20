@@ -1,0 +1,24 @@
+--Original de Santi:
+
+E -> E / T
+T -> TF
+F -> G_G
+F -> G^G
+F -> G^G_G
+F -> G_G^G
+G -> {E}
+G -> (E)
+G -> l
+
+--Nico:
+
+
+E -> TE'
+E' -> /TE' | lambda 
+T -> FT'
+T' -> FT' | lambda
+F -> GF' 
+F' -> ^GF'' | _GF'''  | lambda
+F''->_G | lambda
+F''' -> ^G | lambda
+G -> {E} | (E) | I
