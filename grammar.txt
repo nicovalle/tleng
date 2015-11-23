@@ -12,6 +12,25 @@ G -> l
 
 --Nico:
 
+S -> E
+E-> E / T 
+E -> T
+T -> TF
+T -> F
+F -> G
+F -> G_G
+F -> G^G
+F -> G^G_G
+F -> G_G^G
+G -> {E}
+G -> (E)
+G -> l
+
+
+
+
+
+
 
 E -> TE'
 E' -> /TE' | lambda 
