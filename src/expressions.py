@@ -131,15 +131,53 @@ class CircumflexUnder(object):
 		return self.first.name() + "^" + self.second.name() + "_" + self.third.name()
 
 	def translate(self):
-		scale(self.first, s)
+		scale(self.first, self.scale)
+		scale(self.second, self.scale * 0.7)
+		scale(self.third, self.scale * 0.7)
+		self.first.x = self.x
+		self.first.y = self.y
+		self.second.x = self.x + self.first.width
+		self.second.y = self.y - (0.45 * self.scale)
+		self.third.x = self.x + self.first.width
+		self.third.y = + self.y + (0.25 * self.scale)
+		self.width = self.first.width + max(self.second.width, self.third.width)
+		self.height = self.first.height +(0.45 * self.scale) + (0.25 * self.scale)
+		self.translation = self.first.translate()
+		self.translation += self.second.translate()
+		self.translation += self.third.translate()
+		return self.translation
+
+
 class UnderCircumflex(object):
 	def __init__(self, first, second, third):
+		self.scale = 1
+		self.x = 0
+		self.y = 0
+		self.width = 0.6
+		self.height = 1
 		self.first = first
 		self.second = second
 		self.third = third
 
 	def name(self):
 		return self.first.name() + "_" + self.second.name() + "^" + self.third.name()
+
+	def translate(self):
+		scale(self.first, self.scale)
+		scale(self.second, self.scale * 0.7)
+		scale(self.third, self.scale * 0.7)
+		self.first.x = self.x
+		self.first.y = self.y
+		self.third.x = self.x + self.first.width
+		self.third.y = self.y - (0.45 * self.scale)
+		self.second.x = self.x + self.first.width
+		self.second.y = + self.y + (0.25 * self.scale)
+		self.width = self.first.width + max(self.second.width, self.third.width)
+		self.height = self.first.height +(0.45 * self.scale) + (0.25 * self.scale)
+		self.translation = self.first.translate()
+		self.translation += self.second.translate()
+		self.translation += self.third.translate()
+		return self.translation		
 
 class Parenthesis(object):
 	def __init__(self, child):
