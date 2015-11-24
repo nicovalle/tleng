@@ -1,9 +1,9 @@
 from lexer_rules import tokens 
-from expressions import Divide, Concat, Underscore, Circumflex, CircumflexUnder, UnderCircumflex, Parenthesis, Symbol
+from expressions import Start, Divide, Concat, Underscore, Circumflex, CircumflexUnder, UnderCircumflex, Parenthesis, Symbol
 
 def p_start_expression(subexpressions):
 	'start : expression'
-	subexpressions[0] = subexpressions[1]
+	subexpressions[0] = Start(subexpressions[1])
 	
 def p_expression_divide(subexpressions):
 	'expression : expression DIVIDE term'
