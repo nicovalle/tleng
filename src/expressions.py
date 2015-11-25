@@ -5,7 +5,6 @@ def scale(node, scale):
 
 def moveY(node, y):
 	node.y += y
-	print node.y
 	for c in node.children:
 		moveY(c, y)
 
@@ -264,8 +263,6 @@ class Parenthesis(object):
 		self.child.y = self.y
 		self.child.operate()
 		self.width = self.child.width + (2 * self.scale * 0.6)
-		print 'child '+ str(self.child.width)
-		print 'parent '+ str(self.width)
 		self.height = self.child.height
 
 	def translate(self):
