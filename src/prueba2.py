@@ -8,8 +8,20 @@ lexer = lex(module=lexer_rules)
 
 parser = yacc(module=parser_rules)
 
-text = "(D^{BC}_{ATGDGJ})"
+#text = "(5^{D_{BC}^{ATGDGJ}}_{t_{gv}^{xyz}})"
 #text = "asc"
+#text = "(A_{B_{C_D}})"
+#text = "(C_{D_{E_{F_G}}})"
+#text = "(C_D)"
+text ="(C_{D_E})"
+text ="(C_{D_{E_F}})"
+text = "(C/{B^C})D"
+#text = "a(bc)d"
+#text = "(C/B)D"
+#text = "ABCDKAKSJD"
+#text = "(A_{B^C_D})"
+
+
 ast = parser.parse(text, lexer)
 
 def dump_ast(ast, output_file):
@@ -36,5 +48,6 @@ def dump_ast(ast, output_file):
     output_file.write("}")
 
 output_file = open("nico.svg", "w")
+ast.operate()
 output_file.write(ast.translate())
 output_file.close()
