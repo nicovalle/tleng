@@ -61,7 +61,7 @@ class Divide(object):
 		self.right.y = self.y
 		self.left.operate()
 		self.right.operate()
-		moveY(self.right, self.right.height)
+		moveY(self.right, self.right.height / 2)
 		self.width = max(self.left.width, self.right.width)
 		self.height = self.left.height + self.right.height #+ 0.28 * self.scale
 		
