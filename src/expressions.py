@@ -8,7 +8,7 @@ class Start(object):
 	def __init__(self, child):
 		self.child = child
 		self.x = 0
-		self.y = 0
+		self.y = 1
 		self.scale = 1
 
 	def name(self):
@@ -32,9 +32,38 @@ class Divide(object):
 	def __init__(self, left, right):
 		self.left = left
 		self.right = right
+		self.width  = 0.6
+		self.height = 1
+		self.x = 0
+		self.y = 0
+		self.scale = 1
 
 	def name(self):
+
 		return self.left.name() + "/" + self.right.name()
+
+	def translate(self):
+		print 'DIVIDE'
+		scale(self.left, self.scale)
+		scale(self.right, self.scale)
+		print self.left.name()
+		self.left.x = self.x
+		self.left.y = self.y - 0.40 * self.scale
+		self.right.x = self.x
+		leftTranslation = self.left.translate()
+		print self.right.height
+		self.right.y = self.y + 0.40 * self.scale
+		rightTranslation = self.right.translate()
+		self.width = max(self.left.width, self.right.width)
+		self.height = self.left.height + self.right.height #+ 0.28 * self.scale
+		self.translation = leftTranslation
+		self.translation += '<line x1="' + str(self.x) + '" y1="' + str(self.y - 0.28 * self.scale) + '" '
+		self.translation += 'x2="' + str(self.x + self.width) +'" y2="' + str(self.y -  0.28 * self.scale) + '" '
+		self.translation +='stroke-width="0.03" stroke="black"/>\n'
+		self.translation += rightTranslation
+		return self.translation
+
+
 
 class Concat(object):
 	def __init__(self, left, right):
@@ -51,6 +80,7 @@ class Concat(object):
 		return self.left.name() + " " + self.right.name()
 
 	def translate(self):
+		print 'CONCAT'
 		scale(self.left, self.scale)
 		scale(self.right, self.scale)
 		self.left.x = self.x
@@ -80,15 +110,16 @@ class Underscore(object):
 	def translate(self):
 		scale(self.left, self.scale)
 		scale(self.right,self.scale * 0.7)
+		
 		self.left.x = self.x
 		self.left.y = self.y
+		self.translation = self.left.translate()
 		self.right.x = self.x + self.left.width
 		self.right.y = self.y + (0.25 * self.scale)
-		self.width = self.left.width + self.right.width
-		self.height = self.left.height + (0.25 * self.scale)
-		self.translation = self.left.translate()
 		self.translation += self.right.translate()
-		
+		self.width = self.left.width + self.right.width
+		self.height = self.left.height + self.right.height #-  (0.25 * self.scale)
+		print self.height
 		return self.translation
 
 class Circumflex(object):
@@ -109,12 +140,12 @@ class Circumflex(object):
 		scale(self.right, self.scale * 0.7)
 		self.left.x = self.x
 		self.left.y = self.y
+		self.translation = self.left.translate()
 		self.right.x = self.x + self.left.width
 		self.right.y = self.y - (0.45 * self.scale)
-		self.width = self.left.width + self.right.width
-		self.height = self.left.height + (0.45 * self.scale)
-		self.translation = self.left.translate()
 		self.translation += self.right.translate()
+		self.width = self.left.width + self.right.width
+		self.height = self.left.height + self.right.height #- (0.25 * self.scale)
 		return self.translation
 
 class CircumflexUnder(object):
@@ -137,6 +168,7 @@ class CircumflexUnder(object):
 		scale(self.third, self.scale * 0.7)
 		self.first.x = self.x
 		self.first.y = self.y
+		firstTranslation = self.first.translate()
 		self.second.x = self.x + self.first.width
 		self.second.y = self.y - (0.45 * self.scale)
 		self.third.x = self.x + self.first.width
@@ -144,8 +176,8 @@ class CircumflexUnder(object):
 		secondTranslation = self.second.translate()
 		thirdTranslation = self.third.translate()
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		self.height = self.first.height + (0.45 * self.scale) + (0.25 * self.scale )
-		self.translation = self.first.translate()
+		self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
+		self.translation = firstTranslation
 		self.translation += secondTranslation
 		self.translation += thirdTranslation
 
@@ -172,6 +204,7 @@ class UnderCircumflex(object):
 		scale(self.third, self.scale * 0.7)
 		self.first.x = self.x
 		self.first.y = self.y
+		firstTranslation = self.first.translate()
 		self.third.x = self.x + self.first.width
 		self.third.y = self.y - (0.45 * self.scale)
 		self.second.x = self.x + self.first.width
@@ -179,8 +212,8 @@ class UnderCircumflex(object):
 		secondTranslation = self.second.translate()
 		thirdTranslation = self.third.translate()
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		self.height = self.first.height +(0.45 * self.scale) + (0.25 * self.scale)
-		self.translation = self.first.translate()
+		self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
+		self.translation = firstTranslation
 		self.translation += secondTranslation
 		self.translation += thirdTranslation
 		return self.translation		
@@ -217,6 +250,8 @@ class Symbol(object):
 		self.scale = 1
 		self.width = 0.6
 		self.height = 1
+		self.x = 0
+		self.y = 0
 
 	def name(self):
 		return str(self.value)
