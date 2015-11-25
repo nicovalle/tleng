@@ -8,8 +8,8 @@ lexer = lex(module=lexer_rules)
 
 parser = yacc(module=parser_rules)
 
-text = "(A{bcd}/E^{FG})"
-
+text = "(D^{BC}_{ATGDGJ})"
+#text = "asc"
 ast = parser.parse(text, lexer)
 
 def dump_ast(ast, output_file):
@@ -35,6 +35,6 @@ def dump_ast(ast, output_file):
 
     output_file.write("}")
 
-output_file = open("prueba2.dot", "w")
-output_file.write(ast.name())
+output_file = open("nico.svg", "w")
+output_file.write(ast.translate())
 output_file.close()

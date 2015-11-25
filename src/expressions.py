@@ -12,7 +12,7 @@ class Start(object):
 		self.scale = 1
 
 	def name(self):
-		return ""
+		return self.child.name()
 
 	def translate(self):
 		scale(self.child, self.scale)
@@ -55,11 +55,12 @@ class Concat(object):
 		scale(self.right, self.scale)
 		self.left.x = self.x
 		self.left.y = self.y
-		self.right.x = self.x + self.left.width
+		leftTranslation = self.left.translate()
+		self.right.x = self.left.x + self.left.width
 		self.right.y = self.y
 		self.width = self.left.width + self.right.width
 		self.height = max(self.left.height, self.right.height)
-		self.translation = self.left.translate() + self.right.translate()
+		self.translation = leftTranslation + self.right.translate()
 		return self.translation
 
 class Underscore(object):
@@ -140,11 +141,14 @@ class CircumflexUnder(object):
 		self.second.y = self.y - (0.45 * self.scale)
 		self.third.x = self.x + self.first.width
 		self.third.y = + self.y + (0.25 * self.scale)
+		secondTranslation = self.second.translate()
+		thirdTranslation = self.third.translate()
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		self.height = self.first.height +(0.45 * self.scale) + (0.25 * self.scale)
+		self.height = self.first.height + (0.45 * self.scale) + (0.25 * self.scale )
 		self.translation = self.first.translate()
-		self.translation += self.second.translate()
-		self.translation += self.third.translate()
+		self.translation += secondTranslation
+		self.translation += thirdTranslation
+
 		return self.translation
 
 
@@ -181,10 +185,29 @@ class UnderCircumflex(object):
 
 class Parenthesis(object):
 	def __init__(self, child):
+		self.scale = 1
+		self.x = 0
+		self.y = 0
+		self.width = 0.6
+		self.height = 1
 		self.child = child
 		
 	def name(self):
 		return "(" + self.child.name() + ")"
+
+	def translate(self):
+		scale(self.child, self.scale)
+		self.child.x = self.x + self.scale * 0.6
+		self.child.y = self.y
+		self.width = self.child.width + (2 * self.scale * 0.6)
+		childTranslation = self.child.translate()
+		self.height = self.child.height
+		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		self.translation += 'translate(' + str(self.x) + ',' + str(self.y) + ') scale(1,' + str(self.height) + ')">(</text>\n'
+		self.translation += childTranslation
+		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y) + ') scale(1,'+ str(self.height) +')">)</text>\n'
+		return self.translation
 
 class Symbol(object):
 	def __init__(self, value):
