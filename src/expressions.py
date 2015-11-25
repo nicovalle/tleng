@@ -176,11 +176,13 @@ class UnderCircumflex(object):
 		self.third.y = self.y - (0.45 * self.scale)
 		self.second.x = self.x + self.first.width
 		self.second.y = + self.y + (0.25 * self.scale)
+		secondTranslation = self.second.translate()
+		thirdTranslation = self.third.translate()
 		self.width = self.first.width + max(self.second.width, self.third.width)
 		self.height = self.first.height +(0.45 * self.scale) + (0.25 * self.scale)
 		self.translation = self.first.translate()
-		self.translation += self.second.translate()
-		self.translation += self.third.translate()
+		self.translation += secondTranslation
+		self.translation += thirdTranslation
 		return self.translation		
 
 class Parenthesis(object):
