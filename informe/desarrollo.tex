@@ -72,7 +72,7 @@
 \indent \indent El lexer recibe una cadena y devuelve, en caso de poder traducir correctamente, la cadena tokenizada. Los tokens re reconocen haciendo uso de expresiones regulares. Se definieron los siguientes tokens:\\
 \begin{itemize}
 \item \textbf{SYMBOL}, que representa a cualquier caracter a excepción de \_ , / , \{, \}, (, ) y  $\hat{}$, es decir, representa el \textit{l} de la gramática. Se reconoce con la expresión regular \begin{verbatim}[^\_\^\{\}\(\)\/]\end{verbatim}
-\item \textbf{LPARENT}, que representa el símbolo (. Se reconoce con la expresión regular \begin{verbatim} (\end{verbatim}
+\item \textbf{LPARENT}, que representa el símbolo (. Se reconoce con la expresión regular \begin{verbatim} \(\end{verbatim}
 \item \textbf{RPARENT}, que representa el símbolo ).  Se reconoce con la expresión regular \begin{verbatim} \) \end{verbatim}
 \item \textbf{LBRACKET}, que representa el símbolo \{.  Se reconoce con la expresión regular \begin{verbatim} \{\end{verbatim}
 \item \textbf{RBRACKET}, que representa el símbolo \}.  Se reconoce con la expresión regular \begin{verbatim} \}\end{verbatim}
@@ -549,5 +549,8 @@ class Symbol(object):
 \item \textbf{Ply}, versión 3.8
 \end{itemize}
 
+\section{Conclusiones}
+
+\indent Este trabajo práctico nos resultó muy útil para entender un poco más de la aplicación de los conceptos de parsing de la materia en la vida real. Si bien es cierto que las herramientas que usamos nos generaron las tablas de parsing, en lo concerniente a la traducción nos vimos obligados a aplicar lo aprendido de gramáticas de atributos y de traducción dirigida por sintaxis, a la vez que tuvimos que hacer algunos compromisos a la hora de implementar la traducción para cumplir con el objetivo.\\
 
 
