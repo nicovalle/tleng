@@ -89,7 +89,7 @@ class Divide(object):
 		
 	def translate(self):
 		self.translation = self.left.translate()
-		self.translation += '<line x1="' + str(self.x) + '" y1="' + str(self.y - 0.28 * self.scale) + '" '
+		self.translation += '\t<line x1="' + str(self.x) + '" y1="' + str(self.y - 0.28 * self.scale) + '" '
 		self.translation += 'x2="' + str(self.x + self.width) +'" y2="' + str(self.y -  0.28 * self.scale) + '" '
 		self.translation +='stroke-width="0.03" stroke="black"/>\n'
 		self.translation += self.right.translate()
