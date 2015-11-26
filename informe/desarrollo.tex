@@ -1,0 +1,57 @@
+\section{Gramática}
+
+En este trabajo se nos presento una gramática ambigúa con el objetivo de implementar un traductor que a partir de una cadena de símbolos genere un archivo específico para graficar esta expresión matmática de forma más aceptable y formal.
+
+La \textit{Gramática} es la siguiente:
+
+ \begin{equation}
+    G = \langle \{ E\};\Sigma;P;E \rangle
+ \end{equation}
+
+Donde $\Sigma$ es el alfabeto de la gramática que contiene cualquier caracter salvo \textasciicircum, \_, \{, \}, ( y ).
+
+Mientras que P es el conjunto de \textit{Producciones:}
+
+\begin{center}
+ E $\rightarrow$ E E 
+\\  $|$ E \textasciicircum E
+\\  $|$ E \_ E
+\\  $|$ E \textasciicircum E \_ E
+\\  $|$ E \_ E \textasciicircum E
+\\  $|$ E / E
+\\  $|$ ( E )
+\\  $|$ \{ E \} 
+\\  $|$ $l$
+\end{center}
+
+Lo que necesitamos hacer es desambiguar las producciones para que la \textit{gramática} quede desambiguada.
+
+\subsection{Desambiguando}
+
+A partir de las condiciones que debe cumplir la gramática vamos a adaptarla para que quede desambiguada.
+
+\begin{itemize}
+ \item ``La división es la de menor precedencia``; por lo que vamos a necesitar una producción nueva para la división
+ \item ''seguida de la concatencación``; de igual manera vamos a necesitar otra producción (un \textit{No Terminal} nuevo) para la concatencación
+  \item ''Ambas son asociativas a izquierda``; esto implica que la recursión en las \textit{producciones} será \textit{a izquierda}.
+  \item ''El superíndice y supraíndice son no asociativos``; entonces van a derivar en valores que no puedan asociarse.
+\end{itemize}
+
+\newpage
+Siguiendo estas condiciones nos queda el siguiente conjunto de producciones:
+
+\begin{center}
+ S $\rightarrow$ E
+\\ E $\rightarrow$ E / T
+\\ E $\rightarrow$ T
+\\ T $\rightarrow$ TF
+\\ T $\rightarrow$ F
+\\ F $\rightarrow$ G\_G
+\\ F $\rightarrow$ G\textasciicircum G
+\\ F $\rightarrow$ G\textasciicircum G\_G
+\\ F $\rightarrow$ G\_G\textasciicircum G
+\\ G $\rightarrow$ \{ E\}
+\\ G $\rightarrow$ (E)
+\\ G $\rightarrow$ $l$
+\end{center}
+
