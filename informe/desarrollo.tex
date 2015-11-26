@@ -71,12 +71,12 @@
 
 \indent \indent El lexer recibe una cadena y devuelve, en caso de poder traducir correctamente, la cadena tokenizada. Los tokens re reconocen haciendo uso de expresiones regulares. Se definieron los siguientes tokens:\\
 \begin{itemize}
-\item \textbf{SYMBOL}, que representa a cualquier caracter a excepción de \_ , / , \{, \}, (, ) y  $\hat{}$, es decir, representa el \textit{l} de la gramática. Se reconoce con la expresión regular \begin{verbatim} \end{verbatim}.
-\item \textbf{LPARENT}, que representa el símbolo (. Se reconoce con la expresión regular \begin{verbatim} [^\_\^\{\}\(\)\/]\end{verbatim}
-\item \textbf{RPARENT}, que representa el símbolo ).  Se reconoce con la expresión regular \begin{verbatim} \( \end{verbatim}
-\item \textbf{LBRACKET}, que representa el símbolo \{.  Se reconoce con la expresión regular \begin{verbatim} \)\end{verbatim}
-\item \textbf{RBRACKET}, que representa el símbolo \}.  Se reconoce con la expresión regular \begin{verbatim} \{\end{verbatim}
-\item \textbf{DIVIDE}, que representa el símbolo /.  Se reconoce con la expresión regular \begin{verbatim} \}\end{verbatim}
+\item \textbf{SYMBOL}, que representa a cualquier caracter a excepción de \_ , / , \{, \}, (, ) y  $\hat{}$, es decir, representa el \textit{l} de la gramática. Se reconoce con la expresión regular \begin{verbatim}[^\_\^\{\}\(\)\/]\end{verbatim}
+\item \textbf{LPARENT}, que representa el símbolo (. Se reconoce con la expresión regular \begin{verbatim} (\end{verbatim}
+\item \textbf{RPARENT}, que representa el símbolo ).  Se reconoce con la expresión regular \begin{verbatim} \) \end{verbatim}
+\item \textbf{LBRACKET}, que representa el símbolo \{.  Se reconoce con la expresión regular \begin{verbatim} \{\end{verbatim}
+\item \textbf{RBRACKET}, que representa el símbolo \}.  Se reconoce con la expresión regular \begin{verbatim} \}\end{verbatim}
+\item \textbf{DIVIDE}, que representa el símbolo /.  Se reconoce con la expresión regular \begin{verbatim} \/\end{verbatim}
 \item \textbf{CIRCUMFLEX}, que representa el símbolo $\hat{}$.  Se reconoce con la expresión regular \begin{verbatim} \^ \end{verbatim}
 \item \textbf{UNDERSCORE}, que representa el símbolo \_.  Se reconoce con la expresión regular \begin{verbatim} \_ \end{verbatim}
 \end{itemize}
