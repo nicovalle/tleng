@@ -104,7 +104,7 @@ def t_NEWLINE(token):
     r"\n+"
     token.lexer.lineno += len(token.value)
 
-t_ignore = " \t"
+t_ignore = " \t\n"
 
 def t_error(token):
     message = "Token desconocido:"
@@ -121,61 +121,427 @@ def t_error(token):
 
 \begin{verbatim}
 from lexer_rules import tokens 
-from expressions import Start, Divide, Concat, Underscore, 
-			Circumflex, CircumflexUnder, UnderCircumflex, Parenthesis, Symbol
+from expressions import Start, Divide, Concat, Underscore, Circumflex, 
+                                CircumflexUnder, UnderCircumflex, Parenthesis, Symbol
 
 def p_start_expression(subexpressions):
-	'start : expression'
-	subexpressions[0] = Start(subexpressions[1])
-	
+        'start : expression'
+        subexpressions[0] = Start(subexpressions[1])
+        
 def p_expression_divide(subexpressions):
-	'expression : expression DIVIDE term'
-	subexpressions[0] = Divide(subexpressions[1], subexpressions[3])
+        'expression : expression DIVIDE term'
+        subexpressions[0] = Divide(subexpressions[1], subexpressions[3])
 
 def p_expression_term(subexpressions):
-	'expression : term'
-	subexpressions[0] = subexpressions[1]
+        'expression : term'
+        subexpressions[0] = subexpressions[1]
 
 def p_term_concat(subexpressions):
-	'term : term factor'
-	subexpressions[0] = Concat(subexpressions[1], subexpressions[2])
+        'term : term factor'
+        subexpressions[0] = Concat(subexpressions[1], subexpressions[2])
 
 def p_term_factor(subexpressions):
-	'term : factor'
-	subexpressions[0] = subexpressions[1]
+        'term : factor'
+        subexpressions[0] = subexpressions[1]
 
 def p_factor_g(subexpressions):
-	'factor : g'
-	subexpressions[0] = subexpressions[1]
+        'factor : g'
+        subexpressions[0] = subexpressions[1]
 
 def p_factor_g_under_g(subexpressions):
-	'factor : g UNDERSCORE g'
-	subexpressions[0] = Underscore(subexpressions[1], subexpressions[3])
+        'factor : g UNDERSCORE g'
+        subexpressions[0] = Underscore(subexpressions[1], subexpressions[3])
 
 def p_factor_g_circum_g(subexpressions):
-	'factor : g CIRCUMFLEX g'
-	subexpressions[0] = Circumflex(subexpressions[1], subexpressions[3])
+        'factor : g CIRCUMFLEX g'
+        subexpressions[0] = Circumflex(subexpressions[1], subexpressions[3])
 
 def p_factor_g_circum_g_under_g(subexpressions):
-	'factor : g CIRCUMFLEX g UNDERSCORE g'
-	subexpressions[0] = CircumflexUnder(subexpressions[1], subexpressions[3], subexpressions[5])
+        'factor : g CIRCUMFLEX g UNDERSCORE g'
+        subexpressions[0] = 
+                     CircumflexUnder(subexpressions[1], subexpressions[3], subexpressions[5])
 
 def p_factor_g_under_g_circum_g(subexpressions):
-	'factor : g UNDERSCORE g CIRCUMFLEX g'
-	subexpressions[0] = UnderCircumflex(subexpressions[1], subexpressions[3], subexpressions[5])
+        'factor : g UNDERSCORE g CIRCUMFLEX g'
+        subexpressions[0] = 
+                     UnderCircumflex(subexpressions[1], subexpressions[3], subexpressions[5])
 
 def p_g_bracket_expression(subexpressions):
-	'g : LBRACKET expression RBRACKET'
-	subexpressions[0] = subexpressions[2]
+        'g : LBRACKET expression RBRACKET'
+        subexpressions[0] = subexpressions[2]
 
 def p_g_parenthesis_expression(subexpressions):
-	'g : LPARENT expression RPARENT'
-	subexpressions[0] = Parenthesis(subexpressions[2])	
+        'g : LPARENT expression RPARENT'
+        subexpressions[0] = Parenthesis(subexpressions[2])        
 
 def p_g_symbol(subexpressions):
-	'g : SYMBOL'
-	subexpressions[0] = Symbol(subexpressions[1])
+        'g : SYMBOL'
+        subexpressions[0] = Symbol(subexpressions[1])
 
 def p_error(subexpressions):
     raise Exception("Syntax error.")
 \end{verbatim}
+
+\subsection{Traductor}
+
+\indent \indent  La operatoria para traducir se compone de dos partes. La primera, \textbf{operate} se encarga de calcular a partir del AST, los valores de los atributos para cada nodo. La segunda parte, \textbf{translate}, se corresponde a la traducción propiamente dicha. Esta parte también opera con el AST, al que asume que ya se le aplicó \textbf{operate}, y en base a los valores de los atributos calculados en dicha operación genera la traducción en el formato SVG.\\
+\indent Como se podrá ver a continuación, se crearon distintas clases que representan a los posibles nodos del AST. Cada una de ellas posee los siguiente atributos:
+
+\begin{itemize}
+\item  \text{x} e \textbf{y} que describen las coordenadas de los nodos y son atributos heredados.
+\item \text{width} y \text{height} que representan el ancho y el alto de la subfórmula de cada nodo y son atributos sintetizados.
+\item \text{scale} que es un atributo heredado que señala la escala de la subfórmula del nodo.
+\end{itemize}
+
+\indent A continuación se provee el código correspondiente a esta sección. Corresponde al archivo \textbf{expressions.py}.
+\begin{verbatim}
+def scale(node, scale):
+    node.scale = scale
+    node.height = node.height * scale
+    node.width = node.width * scale
+
+def moveY(node, y):
+    node.y += y
+    for c in node.children:
+        moveY(c, y)
+
+def getMaxY(node):
+    result = node.y
+    for c in node.children:
+        childrenY = getMaxY(c)
+        result = max(childrenY, result) 
+
+    return result
+
+def getMinY(node):
+    result = node.y
+    for c in node.children:
+        childrenY = getMinY(c)
+        result = min(childrenY, result) 
+
+    return result
+
+class Start(object):
+    def __init__(self, child):
+        self.child = child
+        self.x = 0
+        self.y = 1
+        self.scale = 1
+        self.children = [child]
+
+    def name(self):
+        return self.child.name()
+
+    def operate(self):
+        scale(self.child, self.scale)
+        self.child.x = self.x
+        self.child.y = self.y
+        self.child.operate()
+
+    def translate(self):
+        self.translation =  '<?xml version="1.0" standalone="no"?>\n'
+        self.translation += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n'
+        self.translation += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
+        self.translation += '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">\n'
+        self.translation += '<g transform="translate(0,200) scale(200)" font-family="Courier">\n'
+        self.translation += self.child.translate()
+        self.translation +='</g>\n'
+        self.translation += '</svg>'
+        return self.translation
+
+class Divide(object):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+        self.width  = 0.6
+        self.height = 1
+        self.x = 0
+        self.y = 0
+        self.scale = 1
+        self.children = [left, right]
+
+    def name(self):
+
+        return self.left.name() + "/" + self.right.name()
+
+    def operate(self):
+        scale(self.left, self.scale)
+        scale(self.right, self.scale)
+        self.left.x = self.x
+        self.left.y = self.y - 0.40 * self.scale
+        self.right.x = self.x
+        self.right.y = self.y
+        self.left.operate()
+        self.right.operate()
+        rightMinY = getMinY(self.right)
+        if (self.y != rightMinY):        
+            moveY(self.right, self.right.height - 0.40 * self.scale)
+        else:
+            moveY(self.right, self.y - 0.40 * self.scale)
+        leftMaxY = getMaxY(self.left)
+        moveY(self.left, - abs(self.left.y - leftMaxY))
+        self.width = max(self.left.width, self.right.width)
+        self.height = self.left.height + self.right.height + 2* 0.28 * self.scale
+        
+        
+    def translate(self):
+        self.translation = self.left.translate()
+        self.translation += 
+            '\t<line x1="' + str(self.x) + '" y1="' + str(self.y - 0.28 * self.scale) + '" '
+        self.translation += 
+           'x2="' + str(self.x + self.width) +'" y2="' + str(self.y -  0.28 * self.scale) + '" '
+        self.translation +='stroke-width="0.03" stroke="black"/>\n'
+        self.translation += self.right.translate()
+        return self.translation
+
+
+
+class Concat(object):
+    def __init__(self, left, right):
+        self.scale = 1
+        self.height = 1
+        self.left = left
+        self.right = right
+        self.x = 0
+        self.y = 0
+        self.width = 0.6
+        self.children = [left, right]
+        
+
+    def name(self):
+        return self.left.name() + " " + self.right.name()
+
+    def operate(self):
+        scale(self.left, self.scale)
+        scale(self.right, self.scale)
+        self.left.x = self.x
+        self.left.y = self.y
+        self.left.operate()
+        self.right.x = self.left.x + self.left.width
+        self.right.y = self.y
+        self.right.operate()
+        self.width = self.left.width + self.right.width
+        self.height = max(self.left.height, self.right.height)
+        
+
+    def translate(self):
+        self.translation = self.left.translate() + self.right.translate()
+        return self.translation
+
+class Underscore(object):
+    def __init__(self, left, right):
+        self.x = 0
+        self.y = 0
+        self.left = left
+        self.right = right
+        self.height = 1
+        self.scale = 1
+        self.width = 0.6
+        self.children = [left, right]
+        
+
+    def name(self):
+        return self.left.name() + "_" + self.right.name()
+
+    def operate(self):
+        scale(self.left, self.scale)
+        scale(self.right,self.scale * 0.7)
+        self.left.x = self.x
+        self.left.y = self.y
+        self.left.operate()
+        self.right.x = self.x + self.left.width
+        self.right.y = self.y + (0.25 * self.scale)
+        self.right.operate()
+        self.width = self.left.width + self.right.width
+        self.height = self.left.height + self.right.height - (0.25 * self.scale)
+
+    def translate(self):
+        self.translation = self.left.translate()
+        self.translation += self.right.translate()
+        return self.translation
+
+class Circumflex(object):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+        self.scale = 1
+        self.height = 1
+        self.x = 0
+        self.y = 0
+        self.width = 0.6
+        self.children = [left, right]
+
+    def name(self):
+        return self.left.name() + "^" + self.right.name()
+
+    def operate(self):
+        scale(self.left, self.scale)
+        scale(self.right, self.scale * 0.7)
+        self.left.x = self.x
+        self.left.y = self.y
+        self.left.operate()
+        self.right.x = self.x + self.left.width
+        self.right.y = self.y - (0.45 * self.scale)
+        self.right.operate()
+        self.width = self.left.width + self.right.width
+        self.height = 
+             self.left.height + self.right.height - (0.45 * self.scale)
+    
+    def translate(self):
+        self.translation = self.left.translate()
+        self.translation += self.right.translate()
+        return self.translation
+
+class CircumflexUnder(object):
+    def __init__(self, first, second, third):
+        self.scale = 1
+        self.x = 0
+        self.y = 0
+        self.width = 0.6
+        self.height = 1
+        self.first = first
+        self.second = second
+        self.third = third
+        self.children = [first, second, third]
+
+    def name(self):
+        return self.first.name() + "^" + self.second.name() + "_" + self.third.name()
+
+    def operate(self):
+        scale(self.first, self.scale)
+        scale(self.second, self.scale * 0.7)
+        scale(self.third, self.scale * 0.7)
+        self.first.x = self.x
+        self.first.y = self.y
+        self.first.operate()
+        self.second.x = self.x + self.first.width
+        self.second.y = self.y - (0.45 * self.scale)
+        self.third.x = self.x + self.first.width
+        self.third.y = + self.y + (0.25 * self.scale)
+        self.second.operate()
+        self.third.operate()
+        self.width = self.first.width + max(self.second.width, self.third.width)
+        self.height = 
+                self.first.height + self.second.height + 
+                self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
+    
+    def translate(self):
+        self.translation = self.first.translate()
+        self.translation += self.second.translate()
+        self.translation += self.third.translate()
+        return self.translation
+
+
+class UnderCircumflex(object):
+    def __init__(self, first, second, third):
+        self.scale = 1
+        self.x = 0
+        self.y = 0
+        self.width = 0.6
+        self.height = 1
+        self.first = first
+        self.second = second
+        self.third = third
+        self.children = [first, second, third]
+
+    def name(self):
+        return self.first.name() + "_" + self.second.name() + "^" + self.third.name()
+
+    def operate(self):
+        scale(self.first, self.scale)
+        scale(self.second, self.scale * 0.7)
+        scale(self.third, self.scale * 0.7)
+        self.first.x = self.x
+        self.first.y = self.y
+        self.first.operate()
+        self.third.x = self.x + self.first.width
+        self.third.y = self.y - (0.45 * self.scale)
+        self.second.x = self.x + self.first.width
+        self.second.y = + self.y + (0.25 * self.scale)
+        self.second.operate()
+        self.third.operate()
+        self.width = self.first.width + max(self.second.width, self.third.width)
+        self.height = 
+               self.first.height + self.second.height + 
+               self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
+
+    def translate(self):
+        self.translation = self.first.translate()
+        self.translation += self.second.translate()
+        self.translation += self.third.translate()
+        return self.translation        
+
+class Parenthesis(object):
+    def __init__(self, child):
+        self.scale = 1
+        self.x = 0
+        self.y = 0
+        self.width = 0.6
+        self.height = 1
+        self.child = child
+        self.children = [child]
+        
+    def name(self):
+        return "(" + self.child.name() + ")"
+
+    def operate(self):
+        scale(self.child, self.scale)
+        self.child.x = self.x + self.scale * 0.6
+        self.child.y = self.y
+        self.child.operate()
+        self.width = self.child.width + (2 * self.scale * 0.6)
+        self.height = self.child.height
+
+    def translate(self):
+        self.translation = 
+            '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+        self.translation += 
+            'translate(' + str(self.x) + ',' + str(getMaxY(self.child)) +
+                  ') scale(1,' + str(self.height) + ')">(</text>\n'
+        self.translation += self.child.translate()
+        self.translation += 
+                 '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+        self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + 
+                 ',' + str(getMaxY(self.child)) + ') scale(1,'+ str(self.height) +')">)</text>\n'
+        return self.translation
+
+class Symbol(object):
+    def __init__(self, value):
+        self.value = value
+        self.scale = 1
+        self.width = 0.6
+        self.height = 1
+        self.x = 0
+        self.y = 0
+        self.children = []
+
+    def name(self):
+        return str(self.value)
+
+    def operate(self):
+        pass
+
+    def translate(self):
+        return '\t<text x="' + str(self.x) + '" y="' + str(self.y) +'" font-size="' 
+                 + str(self.scale) + '">' + str(self.value) + '</text>\n'
+\end{verbatim}
+
+
+\newpage
+
+\section{Instrucciones de Uso y manual de usuario}
+
+\indent \indent Para correr el programa por línea de comandos ejecutar:\\
+\begin{verbatim}
+   python traductor.py <archivo_entrada> <archivo_salida>
+\end{verbatim}
+
+\indent Del archivo de entrada solo se leerá la primera línea.\\
+\indent Este trabajo de desarrolló y se probó con las herramientas:
+\begin{itemize}
+\item \textbf{Python}, versión 2.7
+\item \textbf{Ply}, versión 3.8
+\end{itemize}
+
+
+
