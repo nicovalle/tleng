@@ -13,10 +13,12 @@ if __name__ == "__main__":
         print "Uso:"
         print "traductor.py archivo_entrada archivo_salida"
         exit()
-
-    input_file = open(argv[1], "r")
-    text = input_file.read()
-    input_file.close()
+    text = ""
+    with open(argv[1], "r") as fp:
+        for line in fp:
+            text = line
+	    break;
+    	fp.close()
     output_file = open(argv[2], "w")
 
     try:
