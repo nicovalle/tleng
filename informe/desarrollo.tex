@@ -13,7 +13,7 @@
     G = \langle \{ E\};\Sigma;P;E \rangle
  \end{equation}
 
-\indent Donde $\Sigma = $ \{\_ , / , \{, \}, (, ) , \textit{l}, $\hat{}$ \}  y \textbf{P} es el conjunto de producciones:
+\indent Donde $\Sigma = $ \{\_ , / , \{, \}, (, ) , \textit{l}, $\hat{}$ \} , \textit{l} es cualquier caracter a excepción de \_ , / , \{, \}, (, ) , , $\hat{}$  y \textbf{P} es el conjunto de producciones:
 
 \begin{center}
  E $\rightarrow$ E E 
@@ -60,5 +60,122 @@
 
 \subsection{Implementación}
 
-\subsection
+\subsection{Lexer}
 
+\indent \indent El lexer recibe una cadena y devuelve, en caso de poder traducir correctamente, la cadena tokenizada. Los tokens re reconocen haciendo uso de expresiones regulares. Se definieron los siguientes tokens:\\
+\begin{itemize}
+\item \textbf{SYMBOL}, que representa a cualquier caracter a excepción de \_ , / , \{, \}, (, ) y  $\hat{}$, es decir, representa el \textit{l} de la gramática. Se reconoce con la expresión regular \begin{verbatim} \end{verbatim}.
+\item \textbf{LPARENT}, que representa el símbolo (. Se reconoce con la expresión regular \begin{verbatim} [^\_\^\{\}\(\)\/]\end{verbatim}
+\item \textbf{RPARENT}, que representa el símbolo ).  Se reconoce con la expresión regular \begin{verbatim} \( \end{verbatim}
+\item \textbf{LBRACKET}, que representa el símbolo \{.  Se reconoce con la expresión regular \begin{verbatim} \)\end{verbatim}
+\item \textbf{RBRACKET}, que representa el símbolo \}.  Se reconoce con la expresión regular \begin{verbatim} \{\end{verbatim}
+\item \textbf{DIVIDE}, que representa el símbolo /.  Se reconoce con la expresión regular \begin{verbatim} \}\end{verbatim}
+\item \textbf{CIRCUMFLEX}, que representa el símbolo $\hat{}$.  Se reconoce con la expresión regular \begin{verbatim} \^ \end{verbatim}
+\item \textbf{CIRCUMFLEX}, que representa el símbolo \_.  Se reconoce con la expresión regular \begin{verbatim} \_ \end{verbatim}
+\end{itemize}
+
+\indent A continuación se provee el código del lexer. Se puede hallar en el archivo \textbf{lexer\_rules.py}:\\
+
+\begin{verbatim}
+tokens = [
+	'SYMBOL',
+	'LPARENT',
+	'RPARENT',
+	'LBRACKET',
+	'RBRACKET',
+	'DIVIDE',
+	'CIRCUMFLEX',
+	'UNDERSCORE'
+]
+
+t_LPARENT = r"\("
+t_RPARENT = r"\)"
+t_LBRACKET = r"\{"
+t_RBRACKET = r"\}"
+t_DIVIDE = r"\/"
+t_CIRCUMFLEX = r"\^"
+t_UNDERSCORE = r"\_"
+
+def t_SYMBOL(token):
+	r"[^\_\^\{\}\(\)\/]"
+	return token
+
+def t_NEWLINE(token):
+    r"\n+"
+    token.lexer.lineno += len(token.value)
+
+t_ignore = " \t"
+
+def t_error(token):
+    message = "Token desconocido:"
+    message += "\ntype:" + token.type
+    message += "\nvalue:" + str(token.value)
+    message += "\nline:" + str(token.lineno)
+    message += "\nposition:" + str(token.lexpos)
+    raise Exception(message)
+\end{verbatim}
+
+\subsection{Parser}
+
+\indent \indent El parser recibe una cadena tokenizada y a devuele un Abstract Syntax Tree de la cadena. Para cada producción de la gramática se define una función. Se crearon distintas clases que representan a los distintos posibles nodos del AST. Su implementación puede observarse en la sección correspondiente a la implementación de la traducción. El código del parser es el siguiente y se halla en el archivo \textbf{parser\_rules.py}:\\
+
+\begin{verbatim}
+from lexer_rules import tokens 
+from expressions import Start, Divide, Concat, Underscore, 
+			Circumflex, CircumflexUnder, UnderCircumflex, Parenthesis, Symbol
+
+def p_start_expression(subexpressions):
+	'start : expression'
+	subexpressions[0] = Start(subexpressions[1])
+	
+def p_expression_divide(subexpressions):
+	'expression : expression DIVIDE term'
+	subexpressions[0] = Divide(subexpressions[1], subexpressions[3])
+
+def p_expression_term(subexpressions):
+	'expression : term'
+	subexpressions[0] = subexpressions[1]
+
+def p_term_concat(subexpressions):
+	'term : term factor'
+	subexpressions[0] = Concat(subexpressions[1], subexpressions[2])
+
+def p_term_factor(subexpressions):
+	'term : factor'
+	subexpressions[0] = subexpressions[1]
+
+def p_factor_g(subexpressions):
+	'factor : g'
+	subexpressions[0] = subexpressions[1]
+
+def p_factor_g_under_g(subexpressions):
+	'factor : g UNDERSCORE g'
+	subexpressions[0] = Underscore(subexpressions[1], subexpressions[3])
+
+def p_factor_g_circum_g(subexpressions):
+	'factor : g CIRCUMFLEX g'
+	subexpressions[0] = Circumflex(subexpressions[1], subexpressions[3])
+
+def p_factor_g_circum_g_under_g(subexpressions):
+	'factor : g CIRCUMFLEX g UNDERSCORE g'
+	subexpressions[0] = CircumflexUnder(subexpressions[1], subexpressions[3], subexpressions[5])
+
+def p_factor_g_under_g_circum_g(subexpressions):
+	'factor : g UNDERSCORE g CIRCUMFLEX g'
+	subexpressions[0] = UnderCircumflex(subexpressions[1], subexpressions[3], subexpressions[5])
+
+def p_g_bracket_expression(subexpressions):
+	'g : LBRACKET expression RBRACKET'
+	subexpressions[0] = subexpressions[2]
+
+def p_g_parenthesis_expression(subexpressions):
+	'g : LPARENT expression RPARENT'
+	subexpressions[0] = Parenthesis(subexpressions[2])	
+
+def p_g_symbol(subexpressions):
+	'g : SYMBOL'
+	subexpressions[0] = Symbol(subexpressions[1])
+
+def p_error(subexpressions):
+    raise Exception("Syntax error.")
+\end{verbatim}
