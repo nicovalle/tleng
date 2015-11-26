@@ -16,6 +16,14 @@ def getMaxY(node):
 
 	return result
 
+def getMinY(node):
+	result = node.y
+	for c in node.children:
+		childrenY = getMaxY(c)
+		result = min(childrenY, result) 
+
+	return result
+
 class Start(object):
 	def __init__(self, child):
 		self.child = child
@@ -68,7 +76,11 @@ class Divide(object):
 		self.right.y = self.y
 		self.left.operate()
 		self.right.operate()
-		moveY(self.right, self.right.height - 0.40 * self.scale)
+		rightMinY = getMinY(self.right)
+		if (self.y != rightMinY):		
+			moveY(self.right, self.right.height - 0.40 * self.scale)
+		else:
+			moveY(self.right, 1 - 0.40 * self.scale)
 		leftMaxY = getMaxY(self.left)
 		moveY(self.left, - abs(self.left.y - leftMaxY))
 		self.width = max(self.left.width, self.right.width)
