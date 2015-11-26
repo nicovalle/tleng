@@ -21,11 +21,7 @@ def t_SYMBOL(token):
 	r"[^\_\^\{\}\(\)\/]"
 	return token
 
-def t_NEWLINE(token):
-    r"\n+"
-    token.lexer.lineno += len(token.value)
-
-t_ignore = " \t"
+t_ignore = " \t\n"
 
 def t_error(token):
     message = "Token desconocido:"
