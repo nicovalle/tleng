@@ -16,15 +16,16 @@ parser = yacc(module=parser_rules)
 text ="(C_{D_E})"
 text ="(C_{D_{E_F}})"
 text = "({B^{C^F}}/{B^{C^F}})-D"
-text = "(A_{B_{D_R}}/A^{B^{D^R}})-I"
+text = "(A_{B_{D_R}}/A_{B_{D_R}})-I"
 #text = "({A^B_C}/{A_B^C})"
-#text = "({{A^B_C}^G}/{{A^B_C}^G})"
-#text = "a(bc)d"
+text = "({{A^B_C}^G}/{{A^B_C}^G})"
+#text = "a(b^c)d"
 #text = "(C/B)D"
 #text = "ABCDKAKSJD"
 #text = "(A_{B^C_D})"
-text = "(A/B)"
-
+text = "(A/B/C)"
+#text = "(A^{Basdasd}_{C123123123_{asdasdasd}})-I"
+#text = "(A_{B_{D_{R_{B_{C_L}}}}})"
 
 ast = parser.parse(text, lexer)
 
