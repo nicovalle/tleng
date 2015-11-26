@@ -1,3 +1,10 @@
+\section{Introducción}
+
+\indent \indent El objetivo de este trabajo práctico fue desarrollar un compositor de fórmulas matemáticas que tomara como entrada una versión simplicada del lenguaje utilzado por LATEX y produjera como salida un archivo SVG.\\
+\indent \indent En las siguientes secciones se encontrarán detalles sobre el desarrollo de este trabajo práctico, instrucciones de uso y conclusiones.\\
+
+\newpage
+
 \section{Desarrollo}
 
 \indent \indent La confección de este trabajo podría considerse divida en dos etapas. \\
@@ -71,7 +78,7 @@
 \item \textbf{RBRACKET}, que representa el símbolo \}.  Se reconoce con la expresión regular \begin{verbatim} \{\end{verbatim}
 \item \textbf{DIVIDE}, que representa el símbolo /.  Se reconoce con la expresión regular \begin{verbatim} \}\end{verbatim}
 \item \textbf{CIRCUMFLEX}, que representa el símbolo $\hat{}$.  Se reconoce con la expresión regular \begin{verbatim} \^ \end{verbatim}
-\item \textbf{CIRCUMFLEX}, que representa el símbolo \_.  Se reconoce con la expresión regular \begin{verbatim} \_ \end{verbatim}
+\item \textbf{UNDERSCORE}, que representa el símbolo \_.  Se reconoce con la expresión regular \begin{verbatim} \_ \end{verbatim}
 \end{itemize}
 
 \indent A continuación se provee el código del lexer. Se puede hallar en el archivo \textbf{lexer\_rules.py}:\\
@@ -533,10 +540,9 @@ class Symbol(object):
 
 \indent \indent Para correr el programa por línea de comandos ejecutar:\\
 \begin{verbatim}
-   python traductor.py <archivo_entrada> <archivo_salida>
+   python traductor.py cadena_a_traducir <archivo_salida>
 \end{verbatim}
 
-\indent Del archivo de entrada solo se leerá la primera línea.\\
 \indent Este trabajo de desarrolló y se probó con las herramientas:
 \begin{itemize}
 \item \textbf{Python}, versión 2.7

@@ -11,14 +11,9 @@ if __name__ == "__main__":
     if len(argv) != 3:
         print "Parametros invalidos."
         print "Uso:"
-        print "traductor.py archivo_entrada archivo_salida"
+        print "traductor.py cadena_entrada archivo_salida"
         exit()
-    text = ""
-    with open(argv[1], "r") as fp:
-        for line in fp:
-            text = line
-	    break;
-    	fp.close()
+    text = argv[1]
     output_file = open(argv[2], "w")
 
     try:
