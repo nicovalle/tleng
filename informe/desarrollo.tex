@@ -1,16 +1,19 @@
-\section{Gramática}
+\section{Desarrollo}
 
-En este trabajo se nos presento una gramática ambigúa con el objetivo de implementar un traductor que a partir de una cadena de símbolos genere un archivo específico para graficar esta expresión matmática de forma más aceptable y formal.
+\indent \indent La confección de este trabajo podría considerse divida en dos etapas. \\
+\indent La primer etapa corresponde a las modificaciones que se realizaron sobre la gramática del trabajo, con el fin de obtener una nueva gramática para la cual se pueda implementar un parser.
+\indent La segunda etapa del trabajo significó la implementación del lexer, del parser y de la traducción propiamente dicha. Para ello, se utilizo la herramienta \textbf{ply}, que a partir de una ciertas reglas dadas por nosotros genera un parser LALR.\\
 
-La \textit{Gramática} es la siguiente:
+\subsection{Gramática}
+
+\indent Se nos presentó una gramática ambigua a partir de la cual comenzar a trabajar con el fin implementar un traductor de cadenas de símbolos del lenguaje generado por dicha gramática a un fórmula matemática expresada en la sintaxis del formato SVG.
+\indent La gramática original es la siguiente:
 
  \begin{equation}
     G = \langle \{ E\};\Sigma;P;E \rangle
  \end{equation}
 
-Donde $\Sigma$ es el alfabeto de la gramática que contiene cualquier caracter salvo \textasciicircum, \_, \{, \}, ( y ).
-
-Mientras que P es el conjunto de \textit{Producciones:}
+\indent Donde $\Sigma = $ \{\_ , / , \{, \}, (, ) , \textit{l}, $\hat{}$ \}  y \textbf{P} es el conjunto de producciones:
 
 \begin{center}
  E $\rightarrow$ E E 
@@ -24,21 +27,19 @@ Mientras que P es el conjunto de \textit{Producciones:}
 \\  $|$ $l$
 \end{center}
 
-Lo que necesitamos hacer es desambiguar las producciones para que la \textit{gramática} quede desambiguada.
-
-\subsection{Desambiguando}
-
-A partir de las condiciones que debe cumplir la gramática vamos a adaptarla para que quede desambiguada.
+\indent Al ser ambigua, debimos operar sobre la gramática para desambiguarla, teniendo en cuenta las siguientes restricciones:
 
 \begin{itemize}
- \item ``La división es la de menor precedencia``; por lo que vamos a necesitar una producción nueva para la división
- \item ''seguida de la concatencación``; de igual manera vamos a necesitar otra producción (un \textit{No Terminal} nuevo) para la concatencación
-  \item ''Ambas son asociativas a izquierda``; esto implica que la recursión en las \textit{producciones} será \textit{a izquierda}.
-  \item ''El superíndice y supraíndice son no asociativos``; entonces van a derivar en valores que no puedan asociarse.
+ \item La división es la de menor precedencia seguida de la concatencación.
+  \item Tanto la división como la concatenación son asociativas a izquierda. Esto implica que la recursión las \textit{producciones} correspondientes será \textit{a izquierda}.
+  \item El superíndice y supraíndice son no asociativos. Lo que implica que van a derivar en valores que no puedan asociarse.
 \end{itemize}
 
-\newpage
-Siguiendo estas condiciones nos queda el siguiente conjunto de producciones:
+\indent Con estas cuestiones en mente, a partir de la gramática original se dio lugar a una nueva, no ambigua y que cumple las restricciones solicitadas:\\
+
+\begin{equation}
+    G = \langle \{ S, E, T, F, G\};\Sigma;P;S \rangle
+ \end{equation}
 
 \begin{center}
  S $\rightarrow$ E
@@ -54,4 +55,10 @@ Siguiendo estas condiciones nos queda el siguiente conjunto de producciones:
 \\ G $\rightarrow$ (E)
 \\ G $\rightarrow$ $l$
 \end{center}
+
+\indent Notar que la producción  S $\rightarrow$ E en realidad podría no estar. Se agregó a efectos de ser coherentes con la implementación que se hizo.\\ 
+
+\subsection{Implementación}
+
+\subsection
 
