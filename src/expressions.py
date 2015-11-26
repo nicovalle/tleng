@@ -60,9 +60,10 @@ class Divide(object):
 		self.right.y = self.y
 		self.left.operate()
 		self.right.operate()
-		moveY(self.right, self.right.height)
+		moveY(self.right, self.right.height - 0.40 * self.scale)
 		self.width = max(self.left.width, self.right.width)
 		self.height = self.left.height + self.right.height #+ 0.28 * self.scale
+		
 		
 	def translate(self):
 		self.translation = self.left.translate()
@@ -131,7 +132,7 @@ class Underscore(object):
 		self.right.y = self.y + (0.25 * self.scale)
 		self.right.operate()
 		self.width = self.left.width + self.right.width
-		self.height = self.left.height + self.right.height 
+		self.height = self.left.height + self.right.height - (0.25 * self.scale)
 
 	def translate(self):
 		self.translation = self.left.translate()
@@ -162,7 +163,7 @@ class Circumflex(object):
 		self.right.y = self.y - (0.45 * self.scale)
 		self.right.operate()
 		self.width = self.left.width + self.right.width
-		self.height = self.left.height + self.right.height 
+		self.height = self.left.height + self.right.height - (0.45 * self.scale)
 	
 	def translate(self):
 		self.translation = self.left.translate()
@@ -267,10 +268,10 @@ class Parenthesis(object):
 
 	def translate(self):
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(self.y) + ') scale(1,' + str(self.height) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + 0.5 * self.scale) + ') scale(1,' + str(self.height) + ')">(</text>\n'
 		self.translation += self.child.translate()
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y) + ') scale(1,'+ str(self.height) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + 0.5 * self.scale) + ') scale(1,'+ str(self.height) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):

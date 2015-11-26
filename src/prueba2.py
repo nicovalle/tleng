@@ -15,7 +15,7 @@ parser = yacc(module=parser_rules)
 #text = "(C_D)"
 text ="(C_{D_E})"
 text ="(C_{D_{E_F}})"
-text = "(C/{B^C})D"
+text = "({B^{C^F}}/{B^{C^F}})-D"
 #text = "a(bc)d"
 #text = "(C/B)D"
 #text = "ABCDKAKSJD"
