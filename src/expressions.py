@@ -84,7 +84,7 @@ class Divide(object):
 		leftMaxY = getMaxY(self.left)
 		moveY(self.left, - abs(self.left.y - leftMaxY))
 		self.width = max(self.left.width, self.right.width)
-		self.height = self.left.height + self.right.height #+ 0.28 * self.scale
+		self.height = self.left.height + self.right.height + 2* 0.28 * self.scale
 		
 		
 	def translate(self):
@@ -290,10 +290,10 @@ class Parenthesis(object):
 
 	def translate(self):
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + 0.5 * self.scale) + ') scale(1,' + str(self.height) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self)) + ') scale(1,' + str(self.height) + ')">(</text>\n'
 		self.translation += self.child.translate()
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + 0.5 * self.scale) + ') scale(1,'+ str(self.height) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)) + ') scale(1,'+ str(self.height) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):
