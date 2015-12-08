@@ -78,9 +78,9 @@ class Divide(object):
 		self.right.operate()
 		rightMinY = getMinY(self.right)
 		if (self.y != rightMinY):		
-			moveY(self.right, self.right.height - 0.40 * self.scale)
+			moveY(self.right, self.y - 0.50 * self.scale)
 		else:
-			moveY(self.right, self.y - 0.40 * self.scale)
+			moveY(self.right, self.right.height - 0.50 * self.scale)
 		leftMaxY = getMaxY(self.left)
 		moveY(self.left, - abs(self.left.y - leftMaxY))
 		self.width = max(self.left.width, self.right.width)
