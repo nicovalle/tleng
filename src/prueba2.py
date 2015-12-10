@@ -24,8 +24,14 @@ text = "({{A^B_C}^G}/{{A^B_C}^G})"
 #text = "ABCDKAKSJD"
 #text = "(A_{B^C_D})"
 text = "(A/B/C)"
+#
+text = "{a_b}/{e_{b_{c_{d_e}}}}/q12^{e^{b^{c^{d^e}}}}"
+#text = "{a_b}/{e_{b_{c_{d_e}}}}/q12^{e^{b^{c^{d^e}}}}"
+#text = "{a_b}/{e_b^c}"
+
 #text = "(A^{Basdasd}_{C123123123_{asdasdasd}})-I"
 #text = "(A_{B_{D_{R_{B_{C_L}}}}})"
+#text = "(A/B^{e^{e^e}})"
 
 ast = parser.parse(text, lexer)
 
