@@ -46,7 +46,7 @@ class Start(object):
 		self.translation += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n'
 		self.translation += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
 		self.translation += '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">\n'
-		self.translation += '<g transform="translate(0,600) scale(200)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(0,600) scale(120)" font-family="Courier">\n'
 		self.translation += self.child.translate()
 		self.translation +='</g>\n'
 		self.translation += '</svg>'
@@ -78,8 +78,12 @@ class Divide(object):
 		self.right.operate()
 		rightMinY = getMinY(self.right)
 		#moveY(self.right, self.right.height - 0.50 * self.scale)
-		if(rightMinY - self.right.height < self.y):
- 			moveY(self.right, self.right.height - 0.50 * self.scale)
+		if(rightMinY < self.y):
+			#moveY(self.right, self.right.height - 0.50 * self.scale)
+			moveY(self.right, abs(rightMinY-(self.y - 0.35 * self.scale)) + 0.50 * self.scale)
+			
+		else:
+			moveY(self.right, 0.50 * self.scale)
 		#if ((self.y-0.28 * self.scale) > rightMinY):		
 		#	moveY(self.right, self.right.height - 0.50 * self.scale)
 		#else:
