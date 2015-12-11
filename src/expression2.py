@@ -299,10 +299,10 @@ class Parenthesis(object):
 
 	def translate(self):
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child)) + ') scale(1,' + str(self.height) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child)- 0.7*self.scale) + ') scale(1,' + str(self.height-self.scale) + ')">(</text>\n'
 		self.translation += self.child.translate()
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)) + ') scale(1,'+ str(self.height) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)- 0.7*self.scale) + ') scale(1,'+ str(self.height-self.scale) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):
