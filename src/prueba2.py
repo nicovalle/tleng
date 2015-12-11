@@ -29,7 +29,7 @@ text = "(A/B/C)"
 #text = "({a_b}/e_{b_{c_{d_e}}}^{e^{b^{c^{d^e}}}}/q12^{e^{b^{c^{d^e}}}}/{q*212+aNASD+12312+e^2_1})"
 #text = "{a_b}/{e_{b_{c_{d_e}}}}"
 #ext = "({a_b}/e_{b_{c_{d_e}}}^{e^{b^{c^{d^e}}}})"
-#text = "{a_b}/{e_{b_{c_{d_e}}}}/q12^{e^{b^{c^{d^e}}}}"
+text = "{a_b}/{e_{b_{c_{d_e}}}}/q12^{e^{b^{c^{d^e}}}}"
 #text = "{a_b}/{e_b^c}"
 
 #text = "(A^{Basdasd}_{C123123123_{asdasdasd}})-I"
