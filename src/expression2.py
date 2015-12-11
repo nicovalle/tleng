@@ -80,7 +80,7 @@ class Divide(object):
 		#moveY(self.right, self.right.height - 0.50 * self.scale)
 		if(rightMinY < self.y):
 			#moveY(self.right, self.right.height - 0.50 * self.scale)
-			moveY(self.right, abs(rightMinY-(self.y - 0.35 * self.scale)) + 0.50 * self.scale)
+			moveY(self.right, abs(rightMinY-(self.y - 0.60 * self.scale)) + 0.50 * self.scale)
 			
 		else:
 			moveY(self.right, 0.50 * self.scale)
@@ -91,7 +91,7 @@ class Divide(object):
 			
 		leftMaxY = getMaxY(self.left)
 		if(leftMaxY > self.y - 0.28 * self.scale):		
-			moveY(self.left, - abs((self.y - 0.35 * self.scale) - leftMaxY))
+			moveY(self.left, - abs((self.y - 0.60 * self.scale) - leftMaxY))
 		self.width = max(self.left.width, self.right.width)
 		self.height = self.left.height + self.right.height + 2* 0.28 * self.scale
 		
