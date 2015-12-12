@@ -13,6 +13,10 @@ def moveX(node, x):
 	for c in node.children:
 		moveX(c, x)
 
+def printY(node):
+	print node.name(), node.y
+	for c in node.children:
+		printY(c)
 
 def getMaxY(node):
 	result = node.y
@@ -27,6 +31,23 @@ def getMinY(node):
 	for c in node.children:
 		childrenY = getMinY(c)
 		result = min(childrenY, result) 
+
+	return result
+
+def getMinYNode(node):
+	result = node
+	for c in node.children:
+		childrenY = getMinYNode(c)
+		if result.y > childrenY.y:
+			result = childrenY
+	return result
+
+def getMaxYNode(node):
+	result = node
+	for c in node.children:
+		childrenY = getMaxYNode(c)
+		if result.y <= childrenY.y:
+			result = childrenY
 
 	return result
 
@@ -52,7 +73,7 @@ class Start(object):
 		self.translation += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n'
 		self.translation += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
 		self.translation += '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">\n'
-		self.translation += '<g transform="translate(0,600) scale(120)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(20,' + str(abs(getMinY(self.child) - self.y - 2) * 200) + ') scale(200)" font-family="Courier">\n'
 		self.translation += self.child.translate()
 		self.translation +='</g>\n'
 		self.translation += '</svg>'
@@ -82,13 +103,19 @@ class Divide(object):
 		self.right.y = self.y
 		self.left.operate()
 		self.right.operate()
-		rightMinY = getMinY(self.right)
+		rightMinNode = getMinYNode(self.right)
+		rightMinScale = rightMinNode.scale
+		rightMinHeight = rightMinNode.height
+		rightMinY = rightMinNode.y
 		#moveY(self.right, self.right.height - 0.50 * self.scale)
+		#print self.right.name(), rightMinY, self.y 
 		if(rightMinY < self.y):
+			#print "IF", self.right.name()
+			#print "miny", rightMinNode.name()
 			#moveY(self.right, self.right.height - 0.50 * self.scale)
-			moveY(self.right, abs(rightMinY-(self.y - 0.60 * self.scale)) + 0.50 * self.scale)
-			
+			moveY(self.right, abs((rightMinY-rightMinHeight) - (self.y - 0.28 * self.scale)))# + 0.50 * self.scale)
 		else:
+			#print "ELSE", self.right.name()
 			moveY(self.right, 0.50 * self.scale)
 		#if ((self.y-0.28 * self.scale) > rightMinY):		
 		#	moveY(self.right, self.right.height - 0.50 * self.scale)
@@ -97,7 +124,7 @@ class Divide(object):
 			
 		leftMaxY = getMaxY(self.left)
 		if(leftMaxY > self.y - 0.28 * self.scale):		
-			moveY(self.left, - abs((self.y - 0.60 * self.scale) - leftMaxY))
+			moveY(self.left, - abs((self.y - 0.50 * self.scale) - leftMaxY))
 		self.width = max(self.left.width, self.right.width)
 		self.height = self.left.height + self.right.height + 2* 0.28 * self.scale
 		center = (self.x + (self.x + self.width))/2
@@ -310,14 +337,48 @@ class Parenthesis(object):
 		self.width = self.child.width + (2 * self.scale * 0.6)
 		self.height = self.child.height
 
-	def translate(self):
+	def translate2(self):
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child)- 0.7*self.scale) + ') scale(1,' + str(self.height-self.scale) + ')">(</text>\n'
+		#self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child) - 0.13 * self.child.height) + ') scale(1,' + str( 0.9 * self.height) + ')">(</text>\n'
+		#if self.child.name() == "(1/A/B/C/x) (2/D/E/F/y) (3/G/H/I/z)": 
+		print "DESDE ACA"
+		minYNode = getMinYNode(self.child)
+		print self.child.height
+		#print getMinY(self.child), getMaxY(self.child)
+		#print abs(getMaxY(self.child)-getMinY(self.child)), "vs", 0.9*self.child.height
+		print "HASTA ACA"
+		#	print "lala", self.child.name(), getMinYNode(self.child).name() , getMaxYNode(self.child).name()
+		#	print "los y "
+		#	printY(self.child)
+		#print "lala", abs(getMinY(self.child)), abs(getMaxY(self.child)), str(abs(abs(getMinY(self.child)) - abs(getMaxY(self.child)))), self.child.height
+		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child) - 0.13 * self.child.height) + ') scale(1,' + str(abs(getMaxY(self.child)-(getMinY(self.child)-minYNode.height)) - 0.1 * self.height) + ')">(</text>\n'
 		self.translation += self.child.translate()
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)- 0.7*self.scale) + ') scale(1,'+ str(self.height-self.scale) +')">)</text>\n'
+		#self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child) - 0.13 * self.child.height) + ') scale(1,'+ str(0.9 * self.height) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child) - 0.13 * self.child.height) + ') scale(1,'+ str(abs(getMaxY(self.child)-(getMinY(self.child)-minYNode.height))) +')">)</text>\n'
 		return self.translation
 
+	def translate3(self):
+		print 0, self.child.name()
+		print 1, self.child.height
+		print 2, abs(getMaxY(self.child)-(getMinY(self.child) - getMinYNode(self.child).height))
+		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		#self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child) - 0.13 * self.child.height) + ') scale(1,' + str(0.9* self.height) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child)*0.5) + ') scale(1,' + str(0.8* abs(getMaxY(self.child)-(getMinY(self.child) - getMinYNode(self.child).height)) + 0.10 * self.child.height) + ')">(</text>\n'
+		self.translation += self.child.translate()
+		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)) + ') scale(1,'+ str(abs(getMaxY(self.child)-(getMinY(self.child) - getMinYNode(self.child).height))) +')">)</text>\n'
+		return self.translation
+
+	def translate(self):
+		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		self.translation += 'translate(' + str(self.x) + ',' + str(getMaxY(self.child)) + ') scale(1,' + str(self.height) + ')">(</text>\n'
+		self.translation += self.child.translate()
+		print "mirrar", getMinYNode(self.child).name(), getMaxY(self.child), getMinY(self.child), getMinYNode(self.child).height
+		print "dale", str(abs(getMaxY(self.child)-(getMinY(self.child) - getMinYNode(self.child).height)))
+		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(getMaxY(self.child)) + ') scale(1,'+ str(abs(getMaxY(self.child)-(getMinY(self.child) - getMinYNode(self.child).height)))+')">)</text>\n'
+		return self.translation	
 class Symbol(object):
 	def __init__(self, value):
 		self.value = value

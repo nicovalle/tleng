@@ -29,15 +29,22 @@ text = "(A/B/C)"
 #text = "({a_b}/e_{b_{c_{d_e}}}^{e^{b^{c^{d^e}}}}/q12^{e^{b^{c^{d^e}}}}/{q*212+aNASD+12312+e^2_1})"
 #text = "{a_b}/{e_{b_{c_{d_e}}}}"
 #ext = "({a_b}/e_{b_{c_{d_e}}}^{e^{b^{c^{d^e}}}})"
-text = "{a_b}/{e_{b_{c_{d_e}}}}/q12^{e^{b^{c^{d^e}}}}"
+text = "(({a_b})/({e_{b_{c_{d_e}}}})/(q12^{e^{b^{c^{d^e}}}}))"
 #text = "{a_b}/{e_b^c}"
-
+#text = "(q12^{e^{b^{c^{d^{e^{e^{b^{c^{d^e}}}}}}}}})"
 #text = "(A^{Basdasd}_{C123123123_{asdasdasd}})-I"
 #text ="(1+1) / 2"
 #text = "(A_{B_{D_{R_{B_{C_L}}}}})"
 #text = "(A/B^{e^{e^e}})"
 #text = "(({a_b}/e_{b_{c_{d_e}}}^{e^{b^{c^{d^e}}}})/(q12^{e^{b^{c^{d^e}}}}/{q*212+aNASD+12312+e^2_1}))"
-
+#text = "(A)"
+#text = "(({a_b})/({e_{b_{c_{d_e}}}})/(q12^{e^{b^{c^{d^{e^{e^{b^{c^{d^e}}}}}}}}}))"
+#text = "(a/f/a/a/s/w/1/231/3/4/4/a/f)"
+#text ="{(A/B)}{(A)}{(A/B/C)}{(A/B/C/D)}{(q12^{e^{b^{c^{d^e}}}}/{B/C/D/E/F/G/H})}"
+#text = "A(({1/A}/{B/C/x})(2/D/E/F/y)(3/{G/H/I/z}))+"
+#text = "(A/B)"
+#text = "({a_b})"
+text = "(q12^{e^{b^{c^{d^a}}}})"
 ast = parser.parse(text, lexer)
 
 def dump_ast(ast, output_file):
