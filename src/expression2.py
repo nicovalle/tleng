@@ -71,13 +71,15 @@ class Start(object):
 		self.child.x = self.x
 		self.child.y = self.y
 		self.child.operate()
+		self.hlow = self.child.hlow
+		self.hup = self.child.hup
 
 	def translate(self):
 		self.translation =  '<?xml version="1.0" standalone="no"?>\n'
 		self.translation += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n'
 		self.translation += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
 		self.translation += '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">\n'
-		self.translation += '<g transform="translate(20,' + str(abs(getMinY(self.child) - self.y - 2) * 100) + ') scale(100)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(20,' + str((self.hup - self.y + 2) * 75) + ') scale(75)" font-family="Courier">\n'
 		self.translation += self.child.translate()
 		self.translation +='</g>\n'
 		self.translation += '</svg>'
@@ -113,8 +115,8 @@ class Divide(object):
 		print self.right.name(), self.right.height
 		self.hlow = self.right.height+ 0.28
 		self.width = max(self.left.width, self.right.width)
-		moveY(self.left, -self.left.hlow - 0.4 * self.scale)
-		moveY(self.right, self.right.hup)
+		moveY(self.left, -self.left.hlow - 0.50 * self.scale)
+		moveY(self.right, self.right.hup + 0.28*self.scale)
 		self.height = self.hlow + self.hup
 		print "superman",self.hlow, self.hup, self.height
 		center = (self.x + (self.x + self.width))/2
@@ -274,7 +276,7 @@ class CircumflexUnder(object):
 		self.second.operate()
 		self.third.operate()
 		self.hup = max(max(self.first.hup, self.second.hup + 0.45 * self.scale), self.third.hup - 0.25 * self.scale)
-		self.hlow = max(max(self.left.hlow, self.right.hlow - 0.45 * self.scale), self.third.hlow + 0.25*self.scale)
+		self.hlow = max(max(self.first.hlow, self.second.hlow - 0.45 * self.scale), self.third.hlow + 0.25*self.scale)
 		self.width = self.first.width + max(self.second.width, self.third.width)
 		#self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
 		self.height = self.hup + self.hlow
@@ -317,7 +319,7 @@ class UnderCircumflex(object):
 		self.second.operate()
 		self.third.operate()
 		self.hup = max(max(self.first.hup, self.third.hup + 0.45 * self.scale), self.second.hup - 0.25 * self.scale)
-		self.hlow = max(max(self.left.hlow, self.third.hlow - 0.45 * self.scale), self.second.hlow + 0.25*self.scale)	
+		self.hlow = max(max(self.first.hlow, self.third.hlow - 0.45 * self.scale), self.second.hlow + 0.25*self.scale)	
 		self.width = self.first.width + max(self.second.width, self.third.width)
 		#self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
 		self.height = self.hup + self.hlow
@@ -356,10 +358,10 @@ class Parenthesis(object):
 	def translate(self):
 		altura = self.height/0.74
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.hlow - 0.22 * altura/self.scale) + ') scale(1,' + str(altura/self.scale) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.hlow - 0.18 * altura/self.scale) + ') scale(1,' + str(altura/self.scale) + ')">(</text>\n'
 		self.translation += self.child.translate()
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.hlow - 0.22 * altura/self.scale) + ') scale(1,'+ str(altura/self.scale) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.hlow - 0.18 * altura/self.scale) + ') scale(1,'+ str(altura/self.scale) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):
