@@ -13,9 +13,13 @@ def scale(node, scale):
 	node.dp = node.dp * scale
 	node.ht = node.ht * scale
 	node.width = node.width * scale
+	node.minHScale = node.minHScale * scale
+	node.minLScale = node.minLScale * scale
 
 def moveY(node, y):
 	node.y += y
+	node.minY += y
+	node.maxY += y
 	for c in node.children:
 		moveY(c, y)
 
@@ -71,6 +75,10 @@ class Start(object):
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
 		self.height = DEFAULT_HEIGHT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = [child]
 
 	#para debugging
@@ -102,7 +110,7 @@ class Start(object):
 
 		#bajamos tanto como necesitemos la formula para que se vea por completo en pantalla
 		#el scale es arbitrario, suficientemente para visualizar correctamente la formula sin agrandarla demasiado
-		self.translation += '<g transform="translate(20,' + str((self.ht - self.y + 2) * 75) + ') scale(75)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(20,' + str((self.ht - self.y + 2) * 25) + ') scale(25)" font-family="Courier">\n'
 		
 		#traducimos el nodo hijo
 		self.translation += self.child.translate()
@@ -123,6 +131,10 @@ class Divide(object):
 		self.scale = DEFAULT_SCALE
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = [left, right]
 
 	#para debugging
@@ -197,6 +209,10 @@ class Concat(object):
 		self.width = DEFAULT_WIDTH
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = [left, right]
 		
 	#para debugging
@@ -243,6 +259,10 @@ class Underscore(object):
 		self.width = DEFAULT_WIDTH
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = [left, right]
 		
 	#para debugging
@@ -250,20 +270,35 @@ class Underscore(object):
 		return self.left.name() + "_" + self.right.name()
 
 	def operate(self):
+		#escalamos el nodo raiz
 		scale(self.left, self.scale)
-		scale(self.right,self.scale * 0.7)
+
+		#seteamos la posicion del nodo hijo raiz
+		#y calculamos sus atributos
 		self.left.x = self.x
 		self.left.y = self.y
 		self.left.operate()
+
+		#escalo el subindice a partir del menor tamanio encontrado en el nodo raiz
+		scale(self.right,self.left.minHScale * 0.7)
+
+		#seteo las posiciones del subindice y computo sus atributos
+		#para la posicion vertical hago uso del mayor 'y' que puede encontrar en el nodo raiz
+		#y lo bajo un poco mas de acuerdo al menor tamanio hallado en el nodo raiz
 		self.right.x = self.x + self.left.width
-		self.right.y = self.y + (0.25 * self.scale)
+		self.right.y = self.left.maxY + (0.25 * self.left.minHScale)
 		self.right.operate()
-		self.ht = max(self.left.ht, self.right.ht - 0.25 * self.scale)
-		self.dp = max(self.left.dp, self.right.dp + 0.25 * self.scale)
+
+		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
+		self.ht = max(self.left.ht, self.right.ht - 0.25 * self.left.scale)
+		self.dp = max(self.left.dp, self.right.dp + 0.25 * self.left.minHScale)
+		self.maxY = self.right.maxY
+		self.minHScale = self.right.minHScale
 		self.width = self.left.width + self.right.width
 		self.height = self.dp + self.ht
 		
 	def translate(self):
+		#primero traducimos el nodo raiz y a continuacion el subindice
 		self.translation = self.left.translate()
 		self.translation += self.right.translate()
 		return self.translation
@@ -279,6 +314,10 @@ class Circumflex(object):
 		self.width = DEFAULT_WIDTH
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = [left, right]
 
 	#para debugging
@@ -286,20 +325,35 @@ class Circumflex(object):
 		return self.left.name() + "^" + self.right.name()
 
 	def operate(self):
+		#escalamos el nodo raiz
 		scale(self.left, self.scale)
-		scale(self.right, self.scale * 0.7)
+
+		#seteamos la posicion del nodo hijo raiz
+		#y calculamos sus atributos
 		self.left.x = self.x
 		self.left.y = self.y
 		self.left.operate()
+
+		#escalo el superindice a partir del menor tamanio encontrado en el nodo raiz
+		scale(self.right,self.left.minLScale * 0.7)
+		
+		#seteo las posiciones del superindice y computo sus atributos
+		#para la posicion vertical hago uso del menor 'y' que pude encontrar en el nodo raiz
+		#y lo subo un poco mas de acuerdo al menor tamanio hallado en el nodo raiz
 		self.right.x = self.x + self.left.width
-		self.right.y = self.y - (0.45 * self.scale)
+		self.right.y = self.left.minY - (0.45 * self.left.minLScale)
 		self.right.operate()
-		self.ht = max(self.left.ht, self.right.ht + 0.45 * self.scale)
-		self.dp = max(self.left.dp, self.right.dp - 0.45 * self.scale)
+
+		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
+		self.ht = max(self.left.ht, self.right.ht + 0.45 * self.left.scale)
+		self.dp = max(self.left.dp, self.right.dp - 0.45 * self.left.scale)
+		self.minY = self.right.minY
+		self.minLScale = self.right.minLScale
 		self.width = self.left.width + self.right.width
 		self.height = self.dp + self.ht
 	
 	def translate(self):
+		#primero traducimos el nodo raiz y a continuacion el superindice
 		self.translation = self.left.translate()
 		self.translation += self.right.translate()
 		return self.translation
@@ -313,6 +367,10 @@ class CircumflexUnder(object):
 		self.height = DEFAULT_HEIGHT
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.first = first
 		self.second = second
 		self.third = third
@@ -323,24 +381,46 @@ class CircumflexUnder(object):
 		return self.first.name() + "^" + self.second.name() + "_" + self.third.name()
 
 	def operate(self):
+		#escalamos el nodo raiz
 		scale(self.first, self.scale)
-		scale(self.second, self.scale * 0.7)
-		scale(self.third, self.scale * 0.7)
+
+		#seteamos la posicion del nodo hijo raiz
+		#y calculamos sus atributos
 		self.first.x = self.x
 		self.first.y = self.y
 		self.first.operate()
+
+		#escalo el superindice a partir del menor tamanio encontrado de superindices en el nodo raiz
+		#escalo el subindice a partir del menor tamanio encontrado de subindices en el nodo raiz
+		scale(self.second, self.first.minLScale * 0.7)
+		scale(self.third, self.first.minHScale * 0.7)
+
+		#seteo las posiciones del superindice y del subindice y computo sus atributos
+		#para la posicion vertical del superindice hago uso del menor 'y' que pude encontrar en el nodo raiz
+		#y lo subo un poco mas de acuerdo al menor tamanio de superindices  hallado en el nodo raiz
+		#para la posicion vertical del subindice hago uso del mayor 'y' que pude encontrar en el nodo raiz
+		#y lo bajo un poco mas de acuerdo al menor tamanio de subindices hallado en el nodo raiz	
 		self.second.x = self.x + self.first.width
-		self.second.y = self.y - (0.45 * self.scale)
+		self.second.y = self.first.minY - (0.45 * self.first.minLScale)
+		self.third.y = self.first.maxY + (0.25 * self.first.minHScale)
 		self.third.x = self.x + self.first.width
-		self.third.y = + self.y + (0.25 * self.scale)
 		self.second.operate()
 		self.third.operate()
-		self.ht = max(max(self.first.ht, self.second.ht + 0.45 * self.scale), self.third.ht - 0.25 * self.scale)
-		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.scale), self.third.dp + 0.25*self.scale)
+
+		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
+		self.ht = max(max(self.first.ht, self.second.ht + 0.45 * self.first.minLScale), self.third.ht - 0.25 * self.first.minHScale)
+		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.first.minLScale), self.third.dp + 0.25 * self.first.minHScale)
+		self.minY = self.second.minY
+		self.minLScale = self.second.minLScale
+		self.maxY = self.third.maxY
+		self.minHScale = self.third.minHScale
 		self.width = self.first.width + max(self.second.width, self.third.width)
 		self.height = self.ht + self.dp
 
 	def translate(self):
+		#traducimos en primer lugar la raiz
+		#luego traducimos el superindice
+		#finalmente traducimos el subindice
 		self.translation = self.first.translate()
 		self.translation += self.second.translate()
 		self.translation += self.third.translate()
@@ -356,6 +436,10 @@ class UnderCircumflex(object):
 		self.height = DEFAULT_HEIGHT
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.first = first
 		self.second = second
 		self.third = third
@@ -366,24 +450,46 @@ class UnderCircumflex(object):
 		return self.first.name() + "_" + self.second.name() + "^" + self.third.name()
 
 	def operate(self):
+		#escalamos el nodo raiz
 		scale(self.first, self.scale)
-		scale(self.second, self.scale * 0.7)
-		scale(self.third, self.scale * 0.7)
+
+		#seteamos la posicion del nodo hijo raiz
+		#y calculamos sus atributos
 		self.first.x = self.x
 		self.first.y = self.y
 		self.first.operate()
+
+		#escalo el superindice a partir del menor tamanio encontrado de superindices en el nodo raiz
+		#escalo el subindice a partir del menor tamanio encontrado de subindices en el nodo raiz		
+		scale(self.third, self.first.minLScale * 0.7)
+		scale(self.second, self.first.minHScale * 0.7)
+
+		#seteo las posiciones del superindice y del subindice y computo sus atributos
+		#para la posicion vertical del superindice hago uso del menor 'y' que pude encontrar en el nodo raiz
+		#y lo subo un poco mas de acuerdo al menor tamanio de superindices  hallado en el nodo raiz
+		#para la posicion vertical del subindice hago uso del mayor 'y' que pude encontrar en el nodo raiz
+		#y lo bajo un poco mas de acuerdo al menor tamanio de subindices hallado en el nodo raiz	
 		self.third.x = self.x + self.first.width
-		self.third.y = self.y - (0.45 * self.scale)
+		self.third.y = self.first.minY - (0.45 * self.first.minLScale)
+		self.second.y = self.first.maxY + (0.25 * self.first.minHScale)
 		self.second.x = self.x + self.first.width
-		self.second.y = + self.y + (0.25 * self.scale)
-		self.second.operate()
 		self.third.operate()
-		self.ht = max(max(self.first.ht, self.third.ht + 0.45 * self.scale), self.second.ht - 0.25 * self.scale)
-		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.scale), self.second.dp + 0.25*self.scale)	
+		self.second.operate()
+
+		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
+		self.ht = max(max(self.first.ht, self.third.ht + 0.45 * self.first.minLScale), self.second.ht - 0.25 * self.first.minHScale)
+		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.first.minLScale), self.second.dp + 0.25 * self.first.minHScale)
+		self.minY = self.third.minY
+		self.minLScale = self.third.minLScale
+		self.maxY = self.second.maxY
+		self.minHScale = self.second.minHScale
 		self.width = self.first.width + max(self.second.width, self.third.width)
 		self.height = self.ht + self.dp
 
 	def translate(self):
+		#traducimos en primer lugar la raiz
+		#luego traducimos el subindice
+		#finalmente traducimos el superindice
 		self.translation = self.first.translate()
 		self.translation += self.second.translate()
 		self.translation += self.third.translate()
@@ -398,6 +504,10 @@ class Parenthesis(object):
 		self.height = DEFAULT_HEIGHT
 		self.dp = DEFAULT_DP
 		self.ht = DEFAULT_HT
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.child = child
 		self.children = [child]
 	
@@ -458,6 +568,10 @@ class Symbol(object):
 		self.ht = DEFAULT_HT
 		self.x = DEFAULT_X
 		self.y = DEFAULT_Y
+		self.minY = 1
+		self.maxY = 1
+		self.minHScale = DEFAULT_SCALE
+		self.minLScale = DEFAULT_SCALE
 		self.children = []
 
 	#para debugging
@@ -465,7 +579,9 @@ class Symbol(object):
 		return str(self.value)
 
 	def operate(self):
-		# no hay ningun calculo de atributos para hacer, ya que es una hoja del ast
+		#calculo los maxY y minY para el caso en el que el nodo padre es un subindice o superindice
+		self.maxY = self.y
+		self.minY = self.y
 		pass
 
 	def translate(self):
