@@ -103,22 +103,37 @@ class Divide(object):
 		return self.left.name() + "/" + self.right.name()
 
 	def operate(self):
+		#primero escalamos los nodos hijos
+
 		scale(self.left, self.scale)
 		scale(self.right, self.scale)
+		
+		#seteamos las primeras posiciones para los nodos hijos y computamos sus atributos
 		self.left.x = self.x
 		self.left.y = self.y 
 		self.right.x = self.x
 		self.right.y = self.y
 		self.left.operate()
 		self.right.operate()
+		
+		#actualizamos el ht y el dp del nodo
+		
 		self.hup = self.left.height + 0.40
-		print self.right.name(), self.right.height
 		self.hlow = self.right.height+ 0.28
+		
+		#la anchura es la maxima anchura de los hijos
 		self.width = max(self.left.width, self.right.width)
+
+		#reubicamos el numerador por arriba de la linea de division, tanto como se haya pasado y un poco mas
 		moveY(self.left, -self.left.hlow - 0.50 * self.scale)
+		
+		#reubicamos el denominador por debajo de la linea de division
 		moveY(self.right, self.right.hup + 0.28*self.scale)
+
+		#calculamos al altura del nodo
 		self.height = self.hlow + self.hup
-		print "superman",self.hlow, self.hup, self.height
+
+		#calculamos el centro de la division y centramos los nodos hijos
 		center = (self.x + (self.x + self.width))/2
 		rightCenter = (self.right.x + (self.right.x + self.right.width))/2
 		leftCenter = (self.left.x + (self.left.x + self.left.width))/2
@@ -129,10 +144,15 @@ class Divide(object):
 			
 		
 	def translate(self):
+		#traducimos el numerador
 		self.translation = self.left.translate()
+
+		#pintamos la linea de division
 		self.translation += '\t<line x1="' + str(self.x) + '" y1="' + str(self.y - 0.28 * self.scale) + '" '
 		self.translation += 'x2="' + str(self.x + self.width) +'" y2="' + str(self.y -  0.28 * self.scale) + '" '
 		self.translation +='stroke-width="0.03" stroke="black"/>\n'
+		
+		#finalmente traducimos el denominador
 		self.translation += self.right.translate()
 		return self.translation
 
@@ -156,21 +176,31 @@ class Concat(object):
 		return self.left.name() + " " + self.right.name()
 
 	def operate(self):
+		#escalamos los nodos hijos
 		scale(self.left, self.scale)
 		scale(self.right, self.scale)
+		#seteamos la posicion de los nodos hijo mas a la izquierda y computamos sus atributos.
 		self.left.x = self.x
 		self.left.y = self.y
 		self.left.operate()
+
+		#seteamos la posicion del nodo derecho, teniendo en cuenta que debe ubicarse luego del izquierdo,
+		#y computamos sus atributos
 		self.right.x = self.left.x + self.left.width
 		self.right.y = self.y
 		self.right.operate()
+
+		#la anchura del nodo es la suma de las anchuras de los nodos hijos
 		self.width = self.left.width + self.right.width
+
+		#actualizamos ht y dp y con ellos calculamos la altura del nodo
 		self.hlow = max(self.left.hlow, self.right.hlow)
 		self.hup = max(self.left.hup, self.right.hup)
 		self.height = self.hlow + self.hup
 		
 
 	def translate(self):
+		#traducimos el hijo izquierdo y a continuacion el hijo derecho
 		self.translation = self.left.translate() + self.right.translate()
 		return self.translation
 
@@ -278,7 +308,6 @@ class CircumflexUnder(object):
 		self.hup = max(max(self.first.hup, self.second.hup + 0.45 * self.scale), self.third.hup - 0.25 * self.scale)
 		self.hlow = max(max(self.first.hlow, self.second.hlow - 0.45 * self.scale), self.third.hlow + 0.25*self.scale)
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		#self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
 		self.height = self.hup + self.hlow
 
 	def translate(self):
@@ -321,7 +350,6 @@ class UnderCircumflex(object):
 		self.hup = max(max(self.first.hup, self.third.hup + 0.45 * self.scale), self.second.hup - 0.25 * self.scale)
 		self.hlow = max(max(self.first.hlow, self.third.hlow - 0.45 * self.scale), self.second.hlow + 0.25*self.scale)	
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		#self.height = self.first.height + self.second.height + self.third.height - (0.45 * self.scale) -  (0.25 * self.scale)
 		self.height = self.hup + self.hlow
 
 	def translate(self):
@@ -346,22 +374,46 @@ class Parenthesis(object):
 		return "(" + self.child.name() + ")"
 
 	def operate(self):
+		#escalamos el nodo hijo
 		scale(self.child, self.scale)
+
+		#horizontalmente movemos el nodo hijo para dejar lugar al parentesis que abre
+		#la posicion vertical del hijo es la del nodo
 		self.child.x = self.x + self.scale * 0.6
 		self.child.y = self.y
+
+		#computamos los atributos del nodo hijo
 		self.child.operate()
+
+		#la anchura del nodo es la del hijo 
+		#mas el ancho del parentesis que abre mas el ancho del parentesis que cierra
 		self.width = self.child.width + (2 * self.scale * 0.6)
+
+		#actualizamos los ht y dp y la altura del nodo
 		self.hlow = self.child.hlow
 		self.hup = self.child.hup
 		self.height = self.hlow + self.hup
 
 	def translate(self):
-		altura = self.height/0.74
+		#escala es un valor que se utiliza para escalar los parentesis de manera tal que cubran toda la formula 
+		#y para reubicarlos. se lo divide por self.scale para contrarrestar el efecto del font-size al transformar
+		escala = self.height * 1.33 / self.scale
 		self.translation = '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.hlow - 0.18 * altura/self.scale) + ') scale(1,' + str(altura/self.scale) + ')">(</text>\n'
+
+		#se escribe el parentesis que abre.
+		#verticalmente se ubica un poco por encima de donde empieza el nodo hijo,
+		#dado que el simbolo de parentesis se escribe un poco por debajo en la fuente elegida
+		#se lo escala por el valor escala calculado
+		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.hlow - 0.18 * escala) + ') scale(1,' + str(escala) + ')">(</text>\n'
+		
+		#traducimos el nodo hijo
 		self.translation += self.child.translate()
+
+		#escribimos el parentesis que cierra.
+		#idem al partentesis  que abre,
+		# con la excepcion de que verticalmente aparece mas a la derecha tanto como anchura tenga el nodo hijo
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.hlow - 0.18 * altura/self.scale) + ') scale(1,'+ str(altura/self.scale) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.hlow - 0.18 * escala) + ') scale(1,'+ str(escala) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):
@@ -380,6 +432,7 @@ class Symbol(object):
 		return str(self.value)
 
 	def operate(self):
+		# no hay ningun calculo de atributos para hacer, ya que es una hoja del ast
 		pass
 
 	def translate(self):
