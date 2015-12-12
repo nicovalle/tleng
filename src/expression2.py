@@ -1,8 +1,17 @@
+DEFAULT_SCALE = 1
+DEFAULT_HT = 0.8
+DEFAULT_DP = 0.2
+DEFAULT_X = 0
+DEFAULT_Y = 0
+DEFAULT_HEIGHT = 1
+DEFAULT_WIDTH = 0.6
+
+
 def scale(node, scale):
 	node.scale = scale
 	node.height = node.height * scale
-	node.hlow = node.hlow * scale
-	node.hup = node.hup * scale
+	node.dp = node.dp * scale
+	node.ht = node.ht * scale
 	node.width = node.width * scale
 
 def moveY(node, y):
@@ -56,31 +65,49 @@ def getMaxYNode(node):
 class Start(object):
 	def __init__(self, child):
 		self.child = child
-		self.x = 0
+		self.x = DEFAULT_X
 		self.y = 1
-		self.scale = 1
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.scale = DEFAULT_SCALE
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
+		self.height = DEFAULT_HEIGHT
 		self.children = [child]
 
+	#para debugging
 	def name(self):
 		return self.child.name()
 
 	def operate(self):
+		#escalamos el nodo hijo
 		scale(self.child, self.scale)
+
+		#seteamos las posiciones del nodo hijo 
+		#y computamos los atributos
 		self.child.x = self.x
 		self.child.y = self.y
 		self.child.operate()
-		self.hlow = self.child.hlow
-		self.hup = self.child.hup
+
+		#actualizamos el ht, dp y height
+		self.dp = self.child.dp
+		self.ht = self.child.ht
+		self.height = self.dp + self.ht
 
 	def translate(self):
+
+		#escribimos el header del svg
 		self.translation =  '<?xml version="1.0" standalone="no"?>\n'
 		self.translation += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n'
 		self.translation += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
 		self.translation += '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">\n'
-		self.translation += '<g transform="translate(20,' + str((self.hup - self.y + 2) * 75) + ') scale(75)" font-family="Courier">\n'
+
+		#bajamos tanto como necesitemos la formula para que se vea por completo en pantalla
+		#el scale es arbitrario, suficientemente para visualizar correctamente la formula sin agrandarla demasiado
+		self.translation += '<g transform="translate(20,' + str((self.ht - self.y + 2) * 75) + ') scale(75)" font-family="Courier">\n'
+		
+		#traducimos el nodo hijo
 		self.translation += self.child.translate()
+
+		#cerramos el grupo
 		self.translation +='</g>\n'
 		self.translation += '</svg>'
 		return self.translation
@@ -89,15 +116,16 @@ class Divide(object):
 	def __init__(self, left, right):
 		self.left = left
 		self.right = right
-		self.width  = 0.6
-		self.height = 1
-		self.x = 0
-		self.y = 0
-		self.scale = 1
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.width  = DEFAULT_WIDTH
+		self.height = DEFAULT_HEIGHT
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.scale = DEFAULT_SCALE
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.children = [left, right]
 
+	#para debugging
 	def name(self):
 
 		return self.left.name() + "/" + self.right.name()
@@ -118,20 +146,20 @@ class Divide(object):
 		
 		#actualizamos el ht y el dp del nodo
 		
-		self.hup = self.left.height + 0.40
-		self.hlow = self.right.height+ 0.28
+		self.ht = self.left.height + 0.40
+		self.dp = self.right.height+ 0.28
 		
 		#la anchura es la maxima anchura de los hijos
 		self.width = max(self.left.width, self.right.width)
 
 		#reubicamos el numerador por arriba de la linea de division, tanto como se haya pasado y un poco mas
-		moveY(self.left, -self.left.hlow - 0.50 * self.scale)
+		moveY(self.left, -self.left.dp - 0.50 * self.scale)
 		
 		#reubicamos el denominador por debajo de la linea de division
-		moveY(self.right, self.right.hup + 0.28*self.scale)
+		moveY(self.right, self.right.ht + 0.28*self.scale)
 
 		#calculamos al altura del nodo
-		self.height = self.hlow + self.hup
+		self.height = self.dp + self.ht
 
 		#calculamos el centro de la division y centramos los nodos hijos
 		center = (self.x + (self.x + self.width))/2
@@ -160,18 +188,18 @@ class Divide(object):
 
 class Concat(object):
 	def __init__(self, left, right):
-		self.scale = 1
-		self.height = 1
+		self.scale = DEFAULT_SCALE
+		self.height = DEFAULT_HEIGHT
 		self.left = left
 		self.right = right
-		self.x = 0
-		self.y = 0
-		self.width = 0.6
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.width = DEFAULT_WIDTH
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.children = [left, right]
 		
-
+	#para debugging
 	def name(self):
 		return self.left.name() + " " + self.right.name()
 
@@ -194,9 +222,9 @@ class Concat(object):
 		self.width = self.left.width + self.right.width
 
 		#actualizamos ht y dp y con ellos calculamos la altura del nodo
-		self.hlow = max(self.left.hlow, self.right.hlow)
-		self.hup = max(self.left.hup, self.right.hup)
-		self.height = self.hlow + self.hup
+		self.dp = max(self.left.dp, self.right.dp)
+		self.ht = max(self.left.ht, self.right.ht)
+		self.height = self.dp + self.ht
 		
 
 	def translate(self):
@@ -206,18 +234,18 @@ class Concat(object):
 
 class Underscore(object):
 	def __init__(self, left, right):
-		self.x = 0
-		self.y = 0
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
 		self.left = left
 		self.right = right
-		self.height = 1
-		self.scale = 1
-		self.width = 0.6
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.height = DEFAULT_HEIGHT
+		self.scale = DEFAULT_SCALE
+		self.width = DEFAULT_WIDTH
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.children = [left, right]
 		
-
+	#para debugging
 	def name(self):
 		return self.left.name() + "_" + self.right.name()
 
@@ -230,10 +258,10 @@ class Underscore(object):
 		self.right.x = self.x + self.left.width
 		self.right.y = self.y + (0.25 * self.scale)
 		self.right.operate()
-		self.hup = max(self.left.hup, self.right.hup - 0.25 * self.scale)
-		self.hlow = max(self.left.hlow, self.right.hlow + 0.25 * self.scale)
+		self.ht = max(self.left.ht, self.right.ht - 0.25 * self.scale)
+		self.dp = max(self.left.dp, self.right.dp + 0.25 * self.scale)
 		self.width = self.left.width + self.right.width
-		self.height = self.hlow + self.hup
+		self.height = self.dp + self.ht
 		
 	def translate(self):
 		self.translation = self.left.translate()
@@ -244,15 +272,16 @@ class Circumflex(object):
 	def __init__(self, left, right):
 		self.left = left
 		self.right = right
-		self.scale = 1
-		self.height = 1
-		self.x = 0
-		self.y = 0
-		self.width = 0.6
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.scale = DEFAULT_SCALE
+		self.height = DEFAULT_HEIGHT
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.width = DEFAULT_WIDTH
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.children = [left, right]
 
+	#para debugging
 	def name(self):
 		return self.left.name() + "^" + self.right.name()
 
@@ -265,10 +294,10 @@ class Circumflex(object):
 		self.right.x = self.x + self.left.width
 		self.right.y = self.y - (0.45 * self.scale)
 		self.right.operate()
-		self.hup = max(self.left.hup, self.right.hup + 0.45 * self.scale)
-		self.hlow = max(self.left.hlow, self.right.hlow - 0.45 * self.scale)
+		self.ht = max(self.left.ht, self.right.ht + 0.45 * self.scale)
+		self.dp = max(self.left.dp, self.right.dp - 0.45 * self.scale)
 		self.width = self.left.width + self.right.width
-		self.height = self.hlow + self.hup
+		self.height = self.dp + self.ht
 	
 	def translate(self):
 		self.translation = self.left.translate()
@@ -277,18 +306,19 @@ class Circumflex(object):
 
 class CircumflexUnder(object):
 	def __init__(self, first, second, third):
-		self.scale = 1
-		self.x = 0
-		self.y = 0
-		self.width = 0.6
-		self.height = 1
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.scale = DEFAULT_SCALE
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.width = DEFAULT_WIDTH
+		self.height = DEFAULT_HEIGHT
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.first = first
 		self.second = second
 		self.third = third
 		self.children = [first, second, third]
 
+	#para debugging
 	def name(self):
 		return self.first.name() + "^" + self.second.name() + "_" + self.third.name()
 
@@ -305,10 +335,10 @@ class CircumflexUnder(object):
 		self.third.y = + self.y + (0.25 * self.scale)
 		self.second.operate()
 		self.third.operate()
-		self.hup = max(max(self.first.hup, self.second.hup + 0.45 * self.scale), self.third.hup - 0.25 * self.scale)
-		self.hlow = max(max(self.first.hlow, self.second.hlow - 0.45 * self.scale), self.third.hlow + 0.25*self.scale)
+		self.ht = max(max(self.first.ht, self.second.ht + 0.45 * self.scale), self.third.ht - 0.25 * self.scale)
+		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.scale), self.third.dp + 0.25*self.scale)
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		self.height = self.hup + self.hlow
+		self.height = self.ht + self.dp
 
 	def translate(self):
 		self.translation = self.first.translate()
@@ -319,18 +349,19 @@ class CircumflexUnder(object):
 
 class UnderCircumflex(object):
 	def __init__(self, first, second, third):
-		self.scale = 1
-		self.x = 0
-		self.y = 0
-		self.width = 0.6
-		self.height = 1
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.scale = DEFAULT_SCALE
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.width = DEFAULT_WIDTH
+		self.height = DEFAULT_HEIGHT
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.first = first
 		self.second = second
 		self.third = third
 		self.children = [first, second, third]
 
+	#para debugging
 	def name(self):
 		return self.first.name() + "_" + self.second.name() + "^" + self.third.name()
 
@@ -347,10 +378,10 @@ class UnderCircumflex(object):
 		self.second.y = + self.y + (0.25 * self.scale)
 		self.second.operate()
 		self.third.operate()
-		self.hup = max(max(self.first.hup, self.third.hup + 0.45 * self.scale), self.second.hup - 0.25 * self.scale)
-		self.hlow = max(max(self.first.hlow, self.third.hlow - 0.45 * self.scale), self.second.hlow + 0.25*self.scale)	
+		self.ht = max(max(self.first.ht, self.third.ht + 0.45 * self.scale), self.second.ht - 0.25 * self.scale)
+		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.scale), self.second.dp + 0.25*self.scale)	
 		self.width = self.first.width + max(self.second.width, self.third.width)
-		self.height = self.hup + self.hlow
+		self.height = self.ht + self.dp
 
 	def translate(self):
 		self.translation = self.first.translate()
@@ -360,16 +391,17 @@ class UnderCircumflex(object):
 
 class Parenthesis(object):
 	def __init__(self, child):
-		self.scale = 1
-		self.x = 0
-		self.y = 0
-		self.width = 0.6
-		self.height = 1
-		self.hlow = 0.2
-		self.hup = 0.8
+		self.scale = DEFAULT_SCALE
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
+		self.width = DEFAULT_WIDTH
+		self.height = DEFAULT_HEIGHT
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
 		self.child = child
 		self.children = [child]
-		
+	
+	#para debugging	
 	def name(self):
 		return "(" + self.child.name() + ")"
 
@@ -390,9 +422,9 @@ class Parenthesis(object):
 		self.width = self.child.width + (2 * self.scale * 0.6)
 
 		#actualizamos los ht y dp y la altura del nodo
-		self.hlow = self.child.hlow
-		self.hup = self.child.hup
-		self.height = self.hlow + self.hup
+		self.dp = self.child.dp
+		self.ht = self.child.ht
+		self.height = self.dp + self.ht
 
 	def translate(self):
 		#escala es un valor que se utiliza para escalar los parentesis de manera tal que cubran toda la formula 
@@ -404,7 +436,7 @@ class Parenthesis(object):
 		#verticalmente se ubica un poco por encima de donde empieza el nodo hijo,
 		#dado que el simbolo de parentesis se escribe un poco por debajo en la fuente elegida
 		#se lo escala por el valor escala calculado
-		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.hlow - 0.18 * escala) + ') scale(1,' + str(escala) + ')">(</text>\n'
+		self.translation += 'translate(' + str(self.x) + ',' + str(self.y + self.dp - 0.18 * escala) + ') scale(1,' + str(escala) + ')">(</text>\n'
 		
 		#traducimos el nodo hijo
 		self.translation += self.child.translate()
@@ -413,21 +445,22 @@ class Parenthesis(object):
 		#idem al partentesis  que abre,
 		# con la excepcion de que verticalmente aparece mas a la derecha tanto como anchura tenga el nodo hijo
 		self.translation += '\t<text x="0" y="0" font-size="' + str(self.scale) + '" transform="'
-		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.hlow - 0.18 * escala) + ') scale(1,'+ str(escala) +')">)</text>\n'
+		self.translation += 'translate(' + str(self.x + self.child.width + self.scale * 0.6) + ',' + str(self.y + self.dp - 0.18 * escala) + ') scale(1,'+ str(escala) +')">)</text>\n'
 		return self.translation
 
 class Symbol(object):
 	def __init__(self, value):
 		self.value = value
-		self.scale = 1
-		self.width = 0.6
-		self.height = 1
-		self.hlow = 0.2
-		self.hup = 0.8
-		self.x = 0
-		self.y = 0
+		self.scale = DEFAULT_SCALE
+		self.width = DEFAULT_WIDTH
+		self.height = DEFAULT_HEIGHT
+		self.dp = DEFAULT_DP
+		self.ht = DEFAULT_HT
+		self.x = DEFAULT_X
+		self.y = DEFAULT_Y
 		self.children = []
 
+	#para debugging
 	def name(self):
 		return str(self.value)
 
