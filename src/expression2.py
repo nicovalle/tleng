@@ -110,7 +110,7 @@ class Start(object):
 
 		#bajamos tanto como necesitemos la formula para que se vea por completo en pantalla
 		#el scale es arbitrario, suficientemente para visualizar correctamente la formula sin agrandarla demasiado
-		self.translation += '<g transform="translate(20,' + str((self.ht - self.y + 2) * 25) + ') scale(25)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(20,' + str((self.height-self.y  + 2) * 25) + ') scale(25)" font-family="Courier">\n'
 		
 		#traducimos el nodo hijo
 		self.translation += self.child.translate()
@@ -286,12 +286,12 @@ class Underscore(object):
 		#para la posicion vertical hago uso del mayor 'y' que puede encontrar en el nodo raiz
 		#y lo bajo un poco mas de acuerdo al menor tamanio hallado en el nodo raiz
 		self.right.x = self.x + self.left.width
-		self.right.y = self.left.maxY + (0.25 * self.left.minHScale)
 		self.right.operate()
+		moveY(self.right, self.left.maxY + self.right.dp + (0.25 * self.left.minHScale))
 
 		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
 		self.ht = max(self.left.ht, self.right.ht - 0.25 * self.left.scale)
-		self.dp = max(self.left.dp, self.right.dp + 0.25 * self.left.minHScale)
+		self.dp = max(self.left.dp, self.left.maxY + self.right.dp + 0.25 * self.left.minHScale)
 		self.maxY = self.right.maxY
 		self.minHScale = self.right.minHScale
 		self.width = self.left.width + self.right.width
@@ -341,11 +341,12 @@ class Circumflex(object):
 		#para la posicion vertical hago uso del menor 'y' que pude encontrar en el nodo raiz
 		#y lo subo un poco mas de acuerdo al menor tamanio hallado en el nodo raiz
 		self.right.x = self.x + self.left.width
-		self.right.y = self.left.minY - (0.45 * self.left.minLScale)
 		self.right.operate()
+		moveY(self.right, self.left.minY  - self.right.dp - (0.45 * self.left.minLScale))
+
 
 		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
-		self.ht = max(self.left.ht, self.right.ht + 0.45 * self.left.scale)
+		self.ht = max(self.left.ht, self.left.minY + self.right.ht + 0.45 * self.left.scale)
 		self.dp = max(self.left.dp, self.right.dp - 0.45 * self.left.scale)
 		self.minY = self.right.minY
 		self.minLScale = self.right.minLScale
@@ -391,7 +392,7 @@ class CircumflexUnder(object):
 		self.first.operate()
 
 		#escalo el superindice a partir del menor tamanio encontrado de superindices en el nodo raiz
-		#escalo el subindice a partir del menor tamanio encontrado de subindices en el nodo raiz
+		#escalo el subindice a partir del menor tamanio encontrado de subindices en el nodo raiz		
 		scale(self.second, self.first.minLScale * 0.7)
 		scale(self.third, self.first.minHScale * 0.7)
 
@@ -401,15 +402,15 @@ class CircumflexUnder(object):
 		#para la posicion vertical del subindice hago uso del mayor 'y' que pude encontrar en el nodo raiz
 		#y lo bajo un poco mas de acuerdo al menor tamanio de subindices hallado en el nodo raiz	
 		self.second.x = self.x + self.first.width
-		self.second.y = self.first.minY - (0.45 * self.first.minLScale)
-		self.third.y = self.first.maxY + (0.25 * self.first.minHScale)
 		self.third.x = self.x + self.first.width
 		self.second.operate()
 		self.third.operate()
+		moveY(self.second, self.first.minY  - self.second.dp - (0.45 * self.first.minLScale))
+		moveY(self.third, self.first.maxY + self.third.dp + (0.25 * self.first.minHScale))
 
 		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
-		self.ht = max(max(self.first.ht, self.second.ht + 0.45 * self.first.minLScale), self.third.ht - 0.25 * self.first.minHScale)
-		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.first.minLScale), self.third.dp + 0.25 * self.first.minHScale)
+		self.ht = max(max(self.first.ht, self.first.minY + self.second.ht + 0.45 * self.first.scale), self.third.ht - 0.25 * self.first.minHScale)
+		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.first.minLScale), self.first.maxY + self.third.dp + 0.25 * self.first.minHScale)
 		self.minY = self.second.minY
 		self.minLScale = self.second.minLScale
 		self.maxY = self.third.maxY
@@ -470,15 +471,15 @@ class UnderCircumflex(object):
 		#para la posicion vertical del subindice hago uso del mayor 'y' que pude encontrar en el nodo raiz
 		#y lo bajo un poco mas de acuerdo al menor tamanio de subindices hallado en el nodo raiz	
 		self.third.x = self.x + self.first.width
-		self.third.y = self.first.minY - (0.45 * self.first.minLScale)
-		self.second.y = self.first.maxY + (0.25 * self.first.minHScale)
 		self.second.x = self.x + self.first.width
 		self.third.operate()
 		self.second.operate()
+		moveY(self.third, self.first.minY  - self.third.dp - (0.45 * self.first.minLScale))
+		moveY(self.second, self.first.maxY + self.second.dp + (0.25 * self.first.minHScale))
 
 		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
-		self.ht = max(max(self.first.ht, self.third.ht + 0.45 * self.first.minLScale), self.second.ht - 0.25 * self.first.minHScale)
-		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.first.minLScale), self.second.dp + 0.25 * self.first.minHScale)
+		self.ht = max(max(self.first.ht, self.first.minY + self.third.ht + 0.45 * self.first.scale), self.second.ht - 0.25 * self.first.minHScale)
+		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.first.minLScale), self.first.maxY + self.second.dp + 0.25 * self.first.minHScale)
 		self.minY = self.third.minY
 		self.minLScale = self.third.minLScale
 		self.maxY = self.second.maxY
