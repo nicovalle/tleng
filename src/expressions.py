@@ -110,7 +110,7 @@ class Start(object):
 
 		#bajamos tanto como necesitemos la formula para que se vea por completo en pantalla
 		#el scale es arbitrario, suficientemente para visualizar correctamente la formula sin agrandarla demasiado
-		self.translation += '<g transform="translate(20,' + str((self.height-self.y  + 2) * 25) + ') scale(25)" font-family="Courier">\n'
+		self.translation += '<g transform="translate(20,' + str((self.ht-self.y + 3) * 25) + ') scale(25)" font-family="Courier">\n'
 		
 		#traducimos el nodo hijo
 		self.translation += self.child.translate()
@@ -287,11 +287,11 @@ class Underscore(object):
 		#y lo bajo un poco mas de acuerdo al menor tamanio hallado en el nodo raiz
 		self.right.x = self.x + self.left.width
 		self.right.operate()
-		moveY(self.right, self.left.maxY + self.right.ht + (0.25 * self.left.minHScale))
+		moveY(self.right, self.left.maxY + self.right.ht)
 
 		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
-		self.ht = max(self.left.ht, self.right.ht - 0.25 * self.left.scale)
-		self.dp = max(self.left.dp, self.left.maxY + self.right.ht + 0.55 * self.left.minHScale)
+		#self.ht = max(self.left.ht, self.right.ht - 0.25 * self.left.scale)
+		self.dp = self.left.dp + self.right.height - 0.25 * self.left.minHScale
 		self.maxY = self.right.maxY
 		self.minHScale = self.right.minHScale
 		self.width = self.left.width + self.right.width
@@ -346,8 +346,8 @@ class Circumflex(object):
 
 
 		#actualizamos ht, dp, height, width, maxY, minHScale con lo que calculamos del nodo hijo
-		self.ht = max(self.left.ht, self.left.minY + self.right.ht + 0.45 * self.left.scale)
-		self.dp = max(self.left.dp, self.right.dp - 0.45 * self.left.scale)
+		self.ht = self.left.ht + self.right.height - 0.30 * self.left.minLScale
+		#self.dp = max(self.left.dp, self.right.dp - 0.45 * self.left.scale)
 		self.minY = self.right.minY
 		self.minLScale = self.right.minLScale
 		self.width = self.left.width + self.right.width
@@ -406,11 +406,13 @@ class CircumflexUnder(object):
 		self.second.operate()
 		self.third.operate()
 		moveY(self.second, self.first.minY  - self.second.dp - (0.45 * self.first.minLScale))
-		moveY(self.third, self.first.maxY + self.third.ht + (0.25 * self.first.minHScale))
+		moveY(self.third, self.first.maxY + self.third.ht)
 
 		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
-		self.ht = max(max(self.first.ht, self.first.minY + self.second.ht + 0.45 * self.first.scale), self.third.ht - 0.25 * self.first.minHScale)
-		self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.first.minLScale), self.first.maxY + self.third.ht + 0.55 * self.first.minHScale)
+		#self.ht = max(max(self.first.ht, self.first.minY + self.second.ht + 0.45 * self.first.scale), self.third.ht - 0.25 * self.first.minHScale)
+		#self.dp = max(max(self.first.dp, self.second.dp - 0.45 * self.first.minLScale), self.first.maxY + self.third.ht + 0.55 * self.first.minHScale)
+		self.ht = self.first.ht + self.second.height - 0.30 * self.first.minLScale
+		self.dp = self.first.dp + self.third.height - 0.25 * self.first.minHScale
 		self.minY = self.second.minY
 		self.minLScale = self.second.minLScale
 		self.maxY = self.third.maxY
@@ -475,11 +477,13 @@ class UnderCircumflex(object):
 		self.third.operate()
 		self.second.operate()
 		moveY(self.third, self.first.minY  - self.third.dp - (0.45 * self.first.minLScale))
-		moveY(self.second, self.first.maxY + self.second.ht + (0.25 * self.first.minHScale))
+		moveY(self.second, self.first.maxY + self.second.ht)
 
 		#actualizamos ht, dp, height, width, maxY, minHScale, minY, minLScale con lo que calculamos de los nodos hijos
-		self.ht = max(max(self.first.ht, self.first.minY + self.third.ht + 0.45 * self.first.scale), self.second.ht - 0.25 * self.first.minHScale)
-		self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.first.minLScale), self.first.maxY + self.second.ht + 0.55 * self.first.minHScale)
+		#self.ht = max(max(self.first.ht, self.first.minY + self.third.ht + 0.45 * self.first.scale), self.second.ht - 0.25 * self.first.minHScale)
+		#self.dp = max(max(self.first.dp, self.third.dp - 0.45 * self.first.minLScale), self.first.maxY + self.second.ht + 0.55 * self.first.minHScale)
+		self.ht = self.first.ht + self.third.height - 0.30 * self.first.minLScale
+		self.dp = self.first.dp + self.second.height - 0.25 * self.first.minHScale
 		self.minY = self.third.minY
 		self.minLScale = self.third.minLScale
 		self.maxY = self.second.maxY
@@ -533,8 +537,8 @@ class Parenthesis(object):
 		self.width = self.child.width + (2 * self.scale * 0.6)
 
 		#actualizamos los ht y dp y la altura del nodo
-		self.dp = self.child.dp
-		self.ht = self.child.ht
+		self.dp = self.child.dp 
+		self.ht = self.child.ht  
 		self.height = self.dp + self.ht
 
 	def translate(self):
