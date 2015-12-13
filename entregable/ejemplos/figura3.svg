@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+<g transform="translate(20,57.0) scale(15)" font-family="Courier">
+	<text x="0" y="0" font-size="1" transform="translate(0,2.189158) scale(1,5.2269)">(</text>
+	<text x="0.69" y="0.3" font-size="1">A</text>
+	<text x="1.29" y="-0.29" font-size="0.7">B</text>
+	<text x="1.71" y="0.3" font-size="1">C</text>
+	<text x="2.31" y="-0.29" font-size="0.7">D</text>
+	<line x1="0.6" y1="0.72" x2="2.82" y2="0.72" stroke-width="0.03" stroke="black"/>
+	<text x="0.6" y="2.48" font-size="1">E</text>
+	<text x="1.2" y="1.89" font-size="0.7">F</text>
+	<text x="1.2" y="3.04" font-size="0.7">G</text>
+	<text x="1.62" y="2.48" font-size="1">+</text>
+	<text x="2.22" y="2.48" font-size="1">H</text>
+	<text x="0" y="0" font-size="1" transform="translate(2.82,2.189158) scale(1,5.2269)">)</text>
+	<text x="3.42" y="1" font-size="1">-</text>
+	<text x="4.02" y="1" font-size="1">I</text>
+</g>
+</svg>

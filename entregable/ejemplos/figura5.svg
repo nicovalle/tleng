@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+<g transform="translate(20,95.7) scale(15)" font-family="Courier">
+	<text x="0" y="0" font-size="1" transform="translate(0,0.924996) scale(1,7.5278)">(</text>
+	<text x="0" y="0" font-size="1" transform="translate(0.99,-2.47713) scale(1,1.9285)">(</text>
+	<text x="1.59" y="-2.78" font-size="1">a</text>
+	<text x="2.19" y="-2.22" font-size="0.7">b</text>
+	<text x="0" y="0" font-size="1" transform="translate(2.61,-2.47713) scale(1,1.9285)">)</text>
+	<line x1="0.99" y1="-1.91" x2="3.21" y2="-1.91" stroke-width="0.03" stroke="black"/>
+	<text x="0" y="0" font-size="1" transform="translate(0.99,0.05711) scale(1,2.4605)">(</text>
+	<text x="1.59" y="-0.15" font-size="1">e</text>
+	<text x="2.19" y="0.41" font-size="0.7">b</text>
+	<text x="2.19" y="-0.74" font-size="0.7">c</text>
+	<text x="0" y="0" font-size="1" transform="translate(2.61,0.05711) scale(1,2.4605)">)</text>
+	<line x1="0.6" y1="0.72" x2="3.6" y2="0.72" stroke-width="0.03" stroke="black"/>
+	<text x="0" y="0" font-size="1" transform="translate(0.6,2.0406) scale(1,1.33)">(</text>
+	<text x="1.2" y="2.08" font-size="1">A</text>
+	<text x="1.8" y="2.08" font-size="1">+</text>
+	<text x="2.4" y="2.08" font-size="1">B</text>
+	<text x="0" y="0" font-size="1" transform="translate(3.0,2.0406) scale(1,1.33)">)</text>
+	<text x="0" y="0" font-size="1" transform="translate(3.6,0.924996) scale(1,7.5278)">)</text>
+</g>
+</svg>
