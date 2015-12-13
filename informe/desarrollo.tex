@@ -1027,6 +1027,82 @@ class Symbol(object):
 
 \newpage
 
+\section{Algunas Traducciones de Ejemplo}
+
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/a}
+        \caption{$((\{\{1\_2\}\_3\}\_4)(1\_\{2\_\{3\_4\}\})(\{\{1\wedge2\}\wedge3\}\wedge4)(1\wedge\{2\wedge\{3\wedge4\}\}))$}
+       \end{centering}
+\end{figure}
+
+\indent Este ejemplo lo queremos utilizar para hacer notar un par de cuestiones. La primera de ellas es demostrar la no asocitividad del subíndice y del superíndice. La segunda tiene que ver con los paréntesis. Como se puede notar, los parentésis de las fórmulas que son una concatenación de subíndices y las de aquellas que son una concatenación de superíndices no están alineados, y puede parecer raro a la vista. Nosotros creemos, sin embargo, que así como se muestra es cómo se debería ver. Tal visualización tiene sentido, dado que los subíndices hacen crecer la fórmula hacia abajo, mientras que los superíndices la hacen crecer para arriba. Luego, para cubrir correctamente la fórmula, el paréntesis debe ubicarse por debajo en el caso de los subíndices en comparación del caso de los superíndices. Otro detalle que parece confirmar nuestro pensamiento es que las raíces principales de la fórmulas (los 1's), están alineados sobre la misma línea de base.\\
+
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/b}
+        \caption{$(a\wedge(\{(b+c)\}/d)\_(b+c))$}
+       \end{centering}
+\end{figure}
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/c}
+        \caption{$(A\wedge BC\wedge D/E\wedge F\_G+H)-I$}
+       \end{centering}
+\end{figure}
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/d}
+        \caption{$((a\wedge(1/2/3)\_(b/c))(a\wedge(b/c)\_(1/2/3)))$}
+       \end{centering}
+\end{figure}
+
+\indent En la figura anterior se puede observar nuevamente esta disparidad entre los paréntesis. De vuelta, consideramos que esto tiene sentido puesto que la subfórmula de la izquierda termina más arriba que la de la derecha, que, a su vez, termina más por debajo que la de la izquierda.\\
+
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/e}
+        \caption{$((a\_b)/(e\_b\wedge c)/(A + B))$}
+       \end{centering}
+\end{figure}
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/f}
+        \caption{${a\wedge c\_d}{a\_d\wedge c}$}
+       \end{centering}   
+\end{figure}
+
+\indent La figura 6 tiene como objetivo mostrar que es equivalente en la traducción aplicar primero el subíndice y luego el superíndice o viceversa.\\
+
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/g}
+        \caption{$abc$}
+       \end{centering}
+\end{figure}
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/h}
+        \caption{$A+((\{1/A\}/\{B/C/x\})-(2/D/E/F/y)*(3/\{G/H/I/z\})+(A)+(A/B))-2$}
+       \end{centering}
+\end{figure}
+
+\indent La figura anterior nos parece importante puesto que demuestra cómo afecta a la traducción la asociatividad de la división, algo que queda en evidencia con la disparidad en la lineación de la división.\\
+\indent Como se puede observar, para la primer división parece que la operación dominante y que determina dónde se ubica la subfórmula es la que se produce entre $1/A$ y $B/C/x$, lo cual nos parece correcto ya que intencionalmente agrupamos de esa manera.\\ 
+\indent En la segunda división, la que domina es la división entre $2/D/E/F$ e $y$, lo cual tiene sentido, ya que es la última división de esa subfórmula que se traduce, teniendo en cuenta que la división es asociativa a izquierda.\\
+\indent En el tercer caso, domina la división entre 3 y $G/H/I/z$. De vuelta, esto nos parece correcto puesto que agrupamos así los términos.\\
+\indent De aquí podemos concluir, y creemos que correctamente, que la última división de cada subfórmula en traducirse es aquella que dictará la posición final de la subfórmula, alineándola con la línea de base de la fórmula total.\\
+
+\begin{figure}[H]
+      \begin{centering}
+        \includegraphics{imgs/i}
+        \caption{$(\{2*(A\wedge2+X\_i+X\_\{i+2\}\wedge3-4\wedge\{(3/2)*Y\wedge5\_j\}+(25/133))\}/\{5*b\wedge\{3\wedge2\}\})$}
+       \end{centering}
+\end{figure}
+
+\indent Este último ejemplo sirve para ver la traducción de una combinación de las distintas operaciones posibles que nos permite la gramática.\\
+
+\newpage
 \section{Casos de Prueba}
 
 \indent En el archivo \textbf{tests.py} se encuentran unos pequeños casos de prueba.
@@ -1048,14 +1124,16 @@ class Symbol(object):
 \end{verbatim}
 \indent Éste último solamente lee la primera línea del archivo de entrada y la traduce.\\
 
+\indent Recomendamos fuertemente utilizar Google Chrome para abrir los archivos .svg.\\
 \indent Este trabajo de desarrolló y se probó con las herramientas:
 \begin{itemize}
 \item \textbf{Python}, versión 2.7
 \item \textbf{Ply}, versión 3.8
+\item \textbf{Google Chrome}
 \end{itemize}
 
 \section{Conclusiones}
 
-\indent Este trabajo práctico nos resultó muy útil para entender un poco más de la aplicación de los conceptos de parsing de la materia en la vida real. Si bien es cierto que las herramientas que usamos nos generaron las tablas de parsing, en lo concerniente a la traducción nos vimos obligados a aplicar lo aprendido de gramáticas de atributos y de traducción dirigida por sintaxis, a la vez que tuvimos que hacer algunos compromisos a la hora de implementar la traducción para cumplir con el objetivo.\\
+\indent Este trabajo práctico nos resultó muy útil para entender un poco más de la aplicación de los conceptos de parsing de la materia en la vida real. Si bien es cierto que las herramientas que usamos nos generaron las tablas de parsing, en lo concerniente a la traducción nos vimos obligados a aplicar lo aprendido de gramáticas de atributos y de traducción dirigida por sintaxis.\\
 
 
