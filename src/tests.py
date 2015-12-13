@@ -8,7 +8,7 @@ from ply.lex import lex
 from ply.yacc import yacc
 
 
-testsAccept = ["abc", "abcd","a^c_d","{a_b}/(e_b^c)/q12"]
+testsAccept = ["abc","{a^c_d}{a_d^c}","((a_b)/(e_b^c)/(A + B))", "((a^(1/2/3)_(b/c))(a^(b/c)_(1/2/3)))", "(A^BC^D/E^F_G+H)-I", "(a^({(b+c)}/d)_(b+c))", "(({{1_2}_3}_4)(1_{2_{3_4}})({{1^2}^3}^4)(1^{2^{3^4}}))", "({2*(A^2+X_i+X_{i+2}^3-4^{(3/2)*Y^5_j}+(25/133))}/{5*b^{3^2}})"]
 testsReject = ["a{","a_b_c", "1^2^3", "{", ")" ]
 def testAceptar():
 	result = True
@@ -34,10 +34,7 @@ def testRechazar():
 			ast.translate()
 	except Exception as e:
 		result = True
-	return result 
-
-def testPrecedencia():
-	
+	return result 	
 
 if __name__ == "__main__":
 	print "testAceptar"
